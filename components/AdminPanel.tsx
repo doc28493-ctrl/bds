@@ -3,7 +3,7 @@ import { useContent } from '../context/ContentContext';
 import { 
   X, Save, RotateCcw, Lock, ChevronRight, ChevronDown, 
   Image as ImageIcon, Type, LogOut, Plus, Trash2, 
-  Layout, GripVertical, ExternalLink
+  Layout, GripVertical, ExternalLink, CloudUpload, Settings, Check, Loader2, AlertTriangle, Copy
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -18,12 +18,13 @@ const isImageUrl = (url: string) => {
 };
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
-  const { content, updateContent, resetContent } = useContent();
+  const { content, updateContent, resetContent, publishContent } = useContent();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [tempContent, setTempContent] = useState<any>(content);
   const [activeTab, setActiveTab] = useState<string>('hero');
   const [expandedArrays, setExpandedArrays] = useState<{[key: string]: boolean}>({});
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   // Sync when opening
   useEffect(() => {
@@ -39,10 +40,51 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSave = () => {
+  const handleSaveLocal = () => {
     updateContent(tempContent);
-    alert('Đã lưu thay đổi thành công!');
-    onClose();
+    alert('Đã lưu cục bộ (Local). Dữ liệu này chỉ hiển thị trên trình duyệt của bạn.');
+  };
+
+  const handlePublish = async () => {
+      const url = tempContent.config?.googleSheetUrl;
+      if (!url) {
+          alert("Vui lòng nhập Google Web App URL trong tab 'Cấu hình' trước khi xuất bản.");
+          setActiveTab('config');
+          return;
+      }
+
+      // Immediately show syncing status without confirmation
+      setPublishStatus('loading');
+      
+      // 1. Save local first to ensure consistency
+      updateContent(tempContent);
+      
+      // 2. Push to cloud
+      try {
+          // Artificial delay for UX perception if request is too fast (optional but good for feel)
+          const startTime = Date.now();
+          
+          const success = await publishContent(tempContent);
+          
+          const elapsedTime = Date.now() - startTime;
+          const minTime = 1000; // 1s loading animation
+          
+          if (elapsedTime < minTime) {
+              await new Promise(resolve => setTimeout(resolve, minTime - elapsedTime));
+          }
+
+          if (success) {
+              setPublishStatus('success');
+              setTimeout(() => setPublishStatus('idle'), 3000); 
+          } else {
+              setPublishStatus('error');
+              setTimeout(() => setPublishStatus('idle'), 5000);
+          }
+      } catch (error) {
+          console.error(error);
+          setPublishStatus('error');
+          setTimeout(() => setPublishStatus('idle'), 5000);
+      }
   };
 
   const handleReset = () => {
@@ -51,6 +93,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       setTempContent(content); // Will update via effect, but simpler to reload
       window.location.reload();
     }
+  };
+
+  const copyToClipboard = (text: string) => {
+      navigator.clipboard.writeText(text);
+      alert("Đã sao chép mã!");
   };
 
   // Recursive Updater
@@ -242,6 +289,117 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       );
   };
 
+  // APPS SCRIPT CODE TEMPLATE
+  const appsScriptCode = `function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    var action = e.parameter.action;
+
+    // 1. ACTION: LƯU CẤU HÌNH (Admin Publish)
+    if (action == 'saveConfig') {
+      var rawData = e.parameter.data;
+      
+      // A. Lưu Raw JSON vào sheet 'Database' (BẮT BUỘC ĐỂ WEBSITE ĐỌC)
+      var dbSheet = sheet.getSheetByName('Database');
+      if (!dbSheet) dbSheet = sheet.insertSheet('Database');
+      dbSheet.clear();
+      dbSheet.getRange('A1').setValue(rawData);
+      dbSheet.getRange('A2').setValue(new Date()); // Timestamp
+
+      // B. Lưu Dữ liệu dạng Bảng vào sheet 'CMS_View' (ĐỂ NGƯỜI DÙNG ĐỌC)
+      var viewSheet = sheet.getSheetByName('CMS_View');
+      if (!viewSheet) viewSheet = sheet.insertSheet('CMS_View');
+      viewSheet.clear();
+      
+      // Header cho bảng dễ đọc
+      viewSheet.appendRow(['PHÂN KHU (Section)', 'MÃ TRƯỜNG (Key)', 'NỘI DUNG (Value)']);
+      viewSheet.getRange('A1:C1').setFontWeight('bold').setBackground('#D4AF37').setFontColor('white');
+      viewSheet.setColumnWidth(1, 150); // Cột Section
+      viewSheet.setColumnWidth(2, 250); // Cột Key
+      viewSheet.setColumnWidth(3, 500); // Cột Value
+
+      var jsonData = JSON.parse(rawData);
+      var rows = [];
+
+      // Hàm đệ quy làm phẳng Object thành các dòng
+      function processObject(obj, prefix, sectionName) {
+        for (var key in obj) {
+           if (key === 'config') continue; // Bỏ qua config kỹ thuật
+           
+           var value = obj[key];
+           var currentKey = prefix ? prefix + '.' + key : key;
+           var currentSection = sectionName || key; // Lấy root key làm section
+
+           if (Array.isArray(value)) {
+              value.forEach(function(item, index) {
+                 if (typeof item === 'object') {
+                    processObject(item, currentKey + '[' + (index + 1) + ']', currentSection);
+                 } else {
+                    rows.push([currentSection, currentKey + '[' + (index + 1) + ']', item]);
+                 }
+              });
+           } else if (typeof value === 'object' && value !== null) {
+              processObject(value, currentKey, currentSection);
+           } else {
+              // Giá trị cuối cùng (String/Number)
+              rows.push([currentSection, currentKey, value]);
+           }
+        }
+      }
+
+      processObject(jsonData, '', '');
+
+      // Ghi dữ liệu vào bảng CMS_View
+      if (rows.length > 0) {
+        viewSheet.getRange(2, 1, rows.length, 3).setValues(rows);
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify({result: 'success', type: 'config_saved'}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 2. ACTION: LƯU LEAD (Khách hàng đăng ký)
+    if (action == 'contact') {
+      var leadSheet = sheet.getSheetByName('Leads');
+      if (!leadSheet) {
+        leadSheet = sheet.insertSheet('Leads');
+        leadSheet.appendRow(['Thời gian', 'Họ tên', 'Số điện thoại', 'Email', 'Sản phẩm quan tâm']);
+        leadSheet.getRange('A1:E1').setFontWeight('bold').setBackground('#0D4138').setFontColor('white');
+      }
+      
+      leadSheet.appendRow([
+        new Date(),
+        e.parameter.name,
+        e.parameter.phone,
+        e.parameter.email,
+        e.parameter.interest
+      ]);
+      
+      return ContentService.createTextOutput(JSON.stringify({result: 'success', type: 'lead_saved'}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({result: 'error', error: e.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function doGet(e) {
+  // Trả về dữ liệu cấu hình từ Sheet 'Database' để Website load nội dung
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Database');
+  var data = "{}";
+  if (sheet) {
+     data = sheet.getRange('A1').getValue();
+  }
+  return ContentService.createTextOutput(data).setMimeType(ContentService.MimeType.JSON);
+}`;
+
   if (!isOpen) return null;
 
   return (
@@ -287,10 +445,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
             <div className="w-72 bg-brand-dark text-gray-300 flex flex-col border-r border-white/10 shadow-xl relative z-20">
               <div className="p-6 border-b border-white/10 bg-[#01201b]">
                  <h2 className="font-display text-xl text-white tracking-tight">Green <span className="text-brand-gold">Paradise</span></h2>
-                 <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1">Content Management System</p>
+                 <p className="text-gray-500 mt-1 flex items-center gap-1 text-[10px] uppercase tracking-widest">
+                    <div className={`w-2 h-2 rounded-full ${publishStatus === 'loading' ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
+                    System Online
+                 </p>
               </div>
               <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-                {Object.keys(tempContent).map((key) => (
+                {/* Special Config Tab */}
+                <button
+                    onClick={() => setActiveTab('config')}
+                    className={`w-full text-left px-6 py-4 flex items-center justify-between transition-all border-l-4 mb-2 ${
+                      activeTab === 'config' 
+                        ? 'bg-blue-900/50 text-blue-300 border-blue-400' 
+                        : 'border-transparent hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <span className="uppercase text-xs font-bold tracking-widest flex items-center gap-2">
+                        <Settings size={14}/>
+                        Cấu hình Sync
+                    </span>
+                    {activeTab === 'config' && <ChevronRight size={14} />}
+                </button>
+
+                <div className="w-full h-px bg-white/10 my-2"></div>
+
+                {/* Content Tabs */}
+                {Object.keys(tempContent).filter(k => k !== 'config').map((key) => (
                   <button
                     key={key}
                     onClick={() => setActiveTab(key)}
@@ -333,8 +513,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                          <button onClick={handleReset} className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors border border-transparent hover:border-red-100">
                              <RotateCcw size={14} /> Khôi phục gốc
                          </button>
-                         <button onClick={handleSave} className="px-6 py-2 bg-brand-dark text-white hover:bg-brand-gold hover:text-brand-dark rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg hover:shadow-xl transition-all">
-                             <Save size={14} /> Lưu Thay Đổi
+                         <button onClick={handleSaveLocal} className="px-6 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all">
+                             <Save size={14} /> Lưu Nháp
+                         </button>
+                         
+                         {/* PUBLISH BUTTON - NEW STATE LOGIC */}
+                         <button 
+                             onClick={handlePublish} 
+                             disabled={publishStatus === 'loading'}
+                             className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg hover:shadow-xl transition-all min-w-[200px] justify-center
+                                 ${publishStatus === 'loading' ? 'bg-brand-dark text-brand-gold cursor-wait border border-brand-gold' : ''}
+                                 ${publishStatus === 'success' ? 'bg-green-600 text-white' : ''}
+                                 ${publishStatus === 'error' ? 'bg-red-600 text-white' : ''}
+                                 ${publishStatus === 'idle' ? 'bg-brand-primary text-white hover:bg-brand-gold hover:text-brand-dark' : ''}
+                             `}
+                         >
+                             {publishStatus === 'idle' && <><CloudUpload size={14} /> Xuất Bản (Sync Cloud)</>}
+                             {publishStatus === 'loading' && <><Loader2 size={16} className="animate-spin" /> Đang đồng bộ Sheet...</>}
+                             {publishStatus === 'success' && <><Check size={16} /> Đã lưu thành công!</>}
+                             {publishStatus === 'error' && <><AlertTriangle size={16} /> Lỗi kết nối!</>}
                          </button>
                     </div>
                 </div>
@@ -342,17 +539,74 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 {/* Dynamic Form */}
                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar pb-32">
                     <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                        {tempContent[activeTab] && (
-                            Array.isArray(tempContent[activeTab]) ? (
-                                // Root Array Handling
-                                renderField(activeTab, tempContent[activeTab], [activeTab])
-                            ) : (
-                                // Root Object Handling
-                                <div className="grid grid-cols-1 gap-6">
-                                    {Object.entries(tempContent[activeTab]).map(([key, value]) => 
-                                        renderField(key, value, [activeTab, key])
-                                    )}
+                        {activeTab === 'config' ? (
+                            <div className="space-y-8">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Google Web App URL</label>
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="text" 
+                                            value={tempContent.config?.googleSheetUrl || ''}
+                                            onChange={(e) => updateDeepState(['config', 'googleSheetUrl'], e.target.value)}
+                                            className="flex-1 bg-white border border-gray-300 p-3 rounded focus:border-brand-primary focus:outline-none font-mono text-sm"
+                                            placeholder="https://script.google.com/macros/s/.../exec"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-1">Dán URL từ bước Deployment của Google Apps Script vào đây.</p>
                                 </div>
+
+                                <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+                                    <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                                        <Settings size={16} />
+                                        Hướng dẫn Cài đặt Google Apps Script (Backend)
+                                    </h4>
+                                    
+                                    <ol className="list-decimal list-inside text-sm text-blue-900 space-y-3 mb-6">
+                                        <li>Tạo một <b>Google Sheet</b> mới.</li>
+                                        <li>Vào menu <b>Tiện ích mở rộng (Extensions)</b> → chọn <b>Apps Script</b>.</li>
+                                        <li>Xóa toàn bộ code cũ và dán đoạn mã bên dưới vào.</li>
+                                        <li>Nhấn <b>Lưu (Save)</b>.</li>
+                                        <li>Nhấn nút <b>Triển khai (Deploy)</b> (màu xanh góc phải) → chọn <b>Tùy chọn triển khai mới (New deployment)</b>.</li>
+                                        <li>Chọn loại: <b>Ứng dụng web (Web app)</b>.</li>
+                                        <li>Cấu hình: 
+                                            <ul className="list-disc list-inside ml-6 mt-1 opacity-80">
+                                                <li>Mô tả: Tùy ý (VD: Vinhomes Backend)</li>
+                                                <li>Thực thi dưới dạng: <b>Tôi (Me)</b></li>
+                                                <li>Ai có quyền truy cập: <b>Bất kỳ ai (Anyone)</b> (QUAN TRỌNG)</li>
+                                            </ul>
+                                        </li>
+                                        <li>Nhấn <b>Triển khai</b> → Cấp quyền truy cập nếu được hỏi.</li>
+                                        <li>Copy <b>URL ứng dụng web</b> (có đuôi <code>/exec</code>) và dán vào ô bên trên.</li>
+                                    </ol>
+
+                                    <div className="relative">
+                                        <div className="absolute top-2 right-2">
+                                            <button 
+                                                onClick={() => copyToClipboard(appsScriptCode)}
+                                                className="bg-white/20 hover:bg-white/40 text-blue-900 p-2 rounded transition-colors flex items-center gap-2 text-xs font-bold"
+                                            >
+                                                <Copy size={14} /> Sao chép Code
+                                            </button>
+                                        </div>
+                                        <pre className="bg-[#1e293b] text-blue-100 p-4 rounded-lg overflow-x-auto text-xs font-mono border border-blue-900/20 shadow-inner">
+                                            {appsScriptCode}
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            tempContent[activeTab] && (
+                                Array.isArray(tempContent[activeTab]) ? (
+                                    // Root Array Handling
+                                    renderField(activeTab, tempContent[activeTab], [activeTab])
+                                ) : (
+                                    // Root Object Handling
+                                    <div className="grid grid-cols-1 gap-6">
+                                        {Object.entries(tempContent[activeTab]).map(([key, value]) => 
+                                            renderField(key, value, [activeTab, key])
+                                        )}
+                                    </div>
+                                )
                             )
                         )}
                     </div>

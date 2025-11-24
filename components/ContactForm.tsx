@@ -3,7 +3,7 @@ import { Send, Phone, Mail, MapPin, Gift, Percent, CalendarClock, Loader2 } from
 import { useContent } from '../context/ContentContext';
 
 const ContactForm: React.FC = () => {
-    const { content } = useContent();
+    const { content, submitLead } = useContent();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -12,16 +12,20 @@ const ContactForm: React.FC = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         
-        // Simulate API
-        setTimeout(() => {
-            setIsSubmitting(false);
+        // Use the context function to submit to Google Sheets
+        const success = await submitLead(formData);
+
+        if (success) {
             alert("Cảm ơn Quý khách. Yêu cầu đã được gửi đi. Chuyên viên sẽ liên hệ lại trong thời gian sớm nhất.");
             setFormData({ name: '', email: '', phone: '', interest: 'Căn hộ' });
-        }, 1500);
+        } else {
+            alert("Có lỗi xảy ra, vui lòng liên hệ hotline.");
+        }
+        setIsSubmitting(false);
     };
 
     return (

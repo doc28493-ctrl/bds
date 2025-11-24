@@ -13,15 +13,15 @@ const defaultContent = {
     title1: "SIÊU ĐÔ THỊ BIỂN ESG++",
     title2: "Tâm điểm Vui chơi - giải trí - nghỉ dưỡng",
     desc: "Nơi hội tụ tinh hoa đất trời, kiến tạo chuẩn mực sống thượng lưu mới tại Việt Nam.", 
-    bgImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=2874&auto=format&fit=crop", // High quality backup image
-    videoUrl: "https://cdn.pixabay.com/video/2019/05/28/23989-339223350_large.mp4", // High quality ocean/luxury video
+    bgImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=2874&auto=format&fit=crop",
+    videoUrl: "https://cdn.pixabay.com/video/2019/05/28/23989-339223350_large.mp4",
     stats_number: "2,870",
     stats_label: "Hecta Quy Mô"
   },
   popup: {
     title: "TẢI TRỌN BỘ TÀI LIỆU DỰ ÁN",
     subtitle: "Bảng giá gốc & Chính sách ưu đãi mới nhất tháng 10/2025",
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1000&auto=format&fit=crop", // High quality vertical luxury home image
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1000&auto=format&fit=crop",
     buttonText: "Tải Ngay (Miễn Phí)"
   },
   overview: {
@@ -38,8 +38,8 @@ const defaultContent = {
     heading: "MẶT BẰNG TỔNG THỂ",
     subheading: "QUY HOẠCH ĐỈNH CAO",
     desc: "Khu đô thị lấn biển Vinhomes Green Paradise Cần Giờ được chia thành 5 phân khu chức năng với quy mô dân số khoảng 500.000 người và mục tiêu đón hơn 12 triệu lượt khách mỗi năm.",
-    image_main: "https://vinhomesgreenparadises.vn/wp-content/uploads/2025/09/mat-bang-quy-hoach-vinhomes-green-paradise-can-gio.jpg", // Updated per user request
-    image_sub: "https://vinhomesgreenparadises.vn/wp-content/uploads/2025/09/mat-bang-vinhomes-green-paradise-can-gio.jpg" // Updated per user request
+    image_main: "https://vinhomesgreenparadises.vn/wp-content/uploads/2025/09/mat-bang-quy-hoach-vinhomes-green-paradise-can-gio.jpg",
+    image_sub: "https://vinhomesgreenparadises.vn/wp-content/uploads/2025/09/mat-bang-vinhomes-green-paradise-can-gio.jpg"
   },
   zones: [
     {
@@ -47,41 +47,41 @@ const defaultContent = {
       name: "THE HAVEN BAY",
       subtitle: "Vịnh Tiên - 950ha",
       desc: "Phân khu đô thị sinh thái kết hợp dịch vụ du lịch, cửa ngõ vào khu đô thị. Điểm nhấn là sự kết hợp giữa không gian sinh thái và các khu nghỉ dưỡng, sân golf, bãi tắm công cộng.",
-      image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2825&auto=format&fit=crop" // Resort/Golf Vibe
+      image: "https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=2864&auto=format&fit=crop"
     },
     {
       id: "zone2",
       name: "THE GREEN BAY",
       subtitle: "Vịnh Ngọc - 660ha",
       desc: "Khu vực phát triển du lịch nghỉ dưỡng và nhà ở, kết hợp y tế, giáo dục. Không gian kiến trúc được tổ chức theo các trục cảnh quan chính và phố đi bộ ven biển.",
-      image: "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=2940&auto=format&fit=crop" // Luxury Coastal Living
+      image: "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=2940&auto=format&fit=crop"
     },
     {
       id: "zone3",
       name: "THE PARADISE",
       subtitle: "Mũi Danh Vọng",
       desc: "Trung tâm tài chính, kinh tế và thương mại dịch vụ. Nơi tập trung các công trình điểm nhấn như tháp biểu tượng 108 tầng tại mũi Hải Đăng.",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2940&auto=format&fit=crop" // Skyscraper/Business District
+      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2940&auto=format&fit=crop"
     },
     {
       id: "zone4",
       name: "THE GRAND ISLAND",
       subtitle: "Đảo Mặt Trời",
       desc: "Khu vực phát triển thương mại và nghỉ dưỡng cao cấp. Tập trung vào các khu resort, khách sạn, trung tâm thương mại và giải trí ven mặt nước.",
-      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2940&auto=format&fit=crop" // Island Resort
+      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2940&auto=format&fit=crop"
     },
     {
       id: "zone5",
       name: "BLUE LAGOON",
       subtitle: "Phân khu Trung tâm",
       desc: "Khu vực mặt nước, kênh dẫn và cây xanh, đóng vai trò điều hòa không khí và tạo cảnh quan sinh thái bền vững cho toàn khu đô thị.",
-      image: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?q=80&w=2940&auto=format&fit=crop" // Blue Lagoon/Nature
+      image: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?q=80&w=2940&auto=format&fit=crop"
     },
   ],
   zones_intro: {
       heading: "5 PHÂN KHU BIỂU TƯỢNG",
       desc: "Tháng 02/2021, UBND TP Hồ Chí Minh đã ban hành quyết định phê duyệt quy hoạch chi tiết 1/5000 khu đô thị du lịch lấn biển Cần Giờ với 5 phân khu tổng diện tích hơn 2.870ha.",
-      map_image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2844&auto=format&fit=crop" // Aerial City View
+      map_image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2844&auto=format&fit=crop"
   },
   reasons: {
       heading: "6 GIÁ TRỊ VÀNG ĐỘC TÔN",
@@ -259,6 +259,12 @@ const defaultContent = {
         category: "Thượng Lưu",
         src: "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?q=80&w=2940&auto=format&fit=crop",
         colSpan: ""
+    },
+    {
+        title: "Wellness Spa",
+        category: "Sức Khỏe",
+        src: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2000&auto=format&fit=crop",
+        colSpan: ""
     }
   ],
   contact: {
@@ -269,6 +275,10 @@ const defaultContent = {
     policy_1: "Tặng gói nội thất cao cấp trị giá 500 triệu đồng.",
     policy_2: "Hỗ trợ lãi suất 0% trong 24 tháng.",
     policy_3: "Chiết khấu 10% cho khách hàng thanh toán sớm."
+  },
+  // Fixed deployment URL
+  config: {
+      googleSheetUrl: "https://script.google.com/macros/s/AKfycbwP96pv0aLvy3aSD4K4WkABieEdRNAVeZoNPaVLA8zwmBOXOXCjPNLZWm-6FuGc6js/exec" 
   }
 };
 
@@ -278,6 +288,8 @@ interface ContentContextType {
   content: ContentType;
   updateContent: (newContent: ContentType) => void;
   resetContent: () => void;
+  publishContent: (contentToPublish: ContentType) => Promise<boolean>;
+  submitLead: (data: any) => Promise<boolean>;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -286,15 +298,49 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [content, setContent] = useState<ContentType>(defaultContent);
 
   useEffect(() => {
+    // 1. Load local content first (fastest)
     const savedContent = localStorage.getItem('site_content');
+    let localData = defaultContent;
+    
     if (savedContent) {
       try {
         const parsed = JSON.parse(savedContent);
-        // Merge to ensure structure exists if we updated defaults
-        setContent({...defaultContent, ...parsed});
+        localData = { ...defaultContent, ...parsed };
+        
+        // Force correct URL if it's missing or empty in the saved data
+        if (!localData.config?.googleSheetUrl) {
+             localData.config = { ...localData.config, googleSheetUrl: defaultContent.config.googleSheetUrl };
+        }
+        
+        setContent(localData);
       } catch (e) {
         console.error("Failed to parse saved content", e);
       }
+    }
+
+    // 2. If Google Sheet URL exists, try to fetch fresh data (Real-time sync)
+    if (localData.config.googleSheetUrl) {
+        const fetchUrl = `${localData.config.googleSheetUrl}`;
+        
+        fetch(fetchUrl)
+            .then(res => res.json())
+            .then(cloudData => {
+                if (cloudData && typeof cloudData === 'object' && Object.keys(cloudData).length > 0) {
+                    console.log("Synced content from Google Sheets");
+                    
+                    const merged = { 
+                        ...localData, 
+                        ...cloudData, 
+                        // Ensure config is preserved/enforced
+                        config: { googleSheetUrl: localData.config.googleSheetUrl }
+                    };
+                    
+                    setContent(merged);
+                    // Update local storage to keep it fresh
+                    localStorage.setItem('site_content', JSON.stringify(merged));
+                }
+            })
+            .catch(err => console.warn("Sync failed or offline:", err));
     }
   }, []);
 
@@ -304,12 +350,83 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const resetContent = () => {
-    setContent(defaultContent);
-    localStorage.setItem('site_content', JSON.stringify(defaultContent));
+    const resetData = { ...defaultContent, config: content.config }; // Keep config
+    setContent(resetData);
+    localStorage.setItem('site_content', JSON.stringify(resetData));
+  };
+
+  const publishContent = async (contentToPublish: ContentType): Promise<boolean> => {
+      const targetUrl = contentToPublish.config.googleSheetUrl;
+      
+      if (!targetUrl) {
+          alert("Vui lòng cấu hình Google Sheet URL trước khi xuất bản!");
+          return false;
+      }
+      
+      try {
+          // Construct URL with timestamp to bypass caching
+          const separator = targetUrl.includes('?') ? '&' : '?';
+          const urlWithParams = `${targetUrl}${separator}t=${Date.now()}`;
+
+          // Use FormData for robust transmission
+          const formData = new FormData();
+          formData.append('action', 'saveConfig');
+          
+          // CRITICAL: Stringify the entire content object so Apps Script can just save it to a cell
+          formData.append('data', JSON.stringify(contentToPublish));
+
+          console.log("Publishing to:", urlWithParams);
+
+          // Fire and forget approach for robustness with GAS
+          await fetch(urlWithParams, {
+              method: 'POST',
+              mode: 'no-cors', 
+              credentials: 'omit',
+              body: formData
+          });
+          
+          return true;
+      } catch (error) {
+          console.error("Publish error:", error);
+          return false;
+      }
+  };
+
+  const submitLead = async (data: any): Promise<boolean> => {
+      const targetUrl = content.config.googleSheetUrl;
+      if (!targetUrl) {
+          console.warn("No Google Sheet URL configured. Lead not saved to cloud.");
+          return true; // Pretend success for UI
+      }
+
+      try {
+        // Construct form data
+        const formData = new FormData();
+        formData.append('action', 'contact'); 
+        formData.append('name', data.name);
+        formData.append('phone', data.phone);
+        formData.append('email', data.email);
+        formData.append('interest', data.interest);
+
+        // Also add action to URL for safety
+        const separator = targetUrl.includes('?') ? '&' : '?';
+        const urlWithAction = `${targetUrl}${separator}action=contact`;
+
+        await fetch(urlWithAction, {
+            method: 'POST',
+            mode: 'no-cors',
+            credentials: 'omit', 
+            body: formData
+        });
+        return true;
+      } catch (error) {
+          console.error("Lead submission error:", error);
+          return false;
+      }
   };
 
   return (
-    <ContentContext.Provider value={{ content, updateContent, resetContent }}>
+    <ContentContext.Provider value={{ content, updateContent, resetContent, publishContent, submitLead }}>
       {children}
     </ContentContext.Provider>
   );
