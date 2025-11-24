@@ -3,7 +3,8 @@ import { useContent } from '../context/ContentContext';
 import { 
   X, Save, RotateCcw, Lock, ChevronRight, ChevronDown, 
   Image as ImageIcon, Type, LogOut, Plus, Trash2, 
-  Layout, GripVertical, ExternalLink, CloudUpload, Settings, Check, Loader2, AlertTriangle, Copy
+  Layout, ExternalLink, CloudUpload, Settings, Check, Loader2, AlertTriangle, Copy,
+  Zap, Eye, EyeOff
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -25,11 +26,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<string>('hero');
   const [expandedArrays, setExpandedArrays] = useState<{[key: string]: boolean}>({});
   const [publishStatus, setPublishStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  
+  // New States for Live Preview
+  const [isLivePreview, setIsLivePreview] = useState(true); // Default to Live
+  const [isHidden, setIsHidden] = useState(false); // Hide panel to see site
 
   // Sync when opening
   useEffect(() => {
     if (isOpen) setTempContent(JSON.parse(JSON.stringify(content)));
   }, [isOpen, content]);
+
+  // Live Preview Logic: Auto-update context when tempContent changes
+  useEffect(() => {
+      if (!isLivePreview || !isAuthenticated) return;
+
+      // Debounce to prevent performance issues during rapid typing
+      const handler = setTimeout(() => {
+          updateContent(tempContent);
+      }, 200);
+
+      return () => clearTimeout(handler);
+  }, [tempContent, isLivePreview, isAuthenticated]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,21 +70,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
           return;
       }
 
-      // Immediately show syncing status without confirmation
       setPublishStatus('loading');
       
-      // 1. Save local first to ensure consistency
+      // 1. Save local first
       updateContent(tempContent);
       
       // 2. Push to cloud
       try {
-          // Artificial delay for UX perception if request is too fast (optional but good for feel)
           const startTime = Date.now();
           
           const success = await publishContent(tempContent);
           
           const elapsedTime = Date.now() - startTime;
-          const minTime = 1000; // 1s loading animation
+          const minTime = 1000; 
           
           if (elapsedTime < minTime) {
               await new Promise(resolve => setTimeout(resolve, minTime - elapsedTime));
@@ -90,7 +105,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const handleReset = () => {
     if (confirm('CẢNH BÁO: Hành động này sẽ khôi phục toàn bộ nội dung về mặc định ban đầu. Bạn có chắc chắn không?')) {
       resetContent();
-      setTempContent(content); // Will update via effect, but simpler to reload
+      setTempContent(content); 
       window.location.reload();
     }
   };
@@ -122,12 +137,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
           }
           const targetArray = current[path[path.length - 1]];
           
-          // Clone the first item structure if exists, else empty object
           const template = targetArray.length > 0 
               ? JSON.parse(JSON.stringify(targetArray[0])) 
               : {};
           
-          // Clear values in template
           const clearValues = (obj: any) => {
               Object.keys(obj).forEach(key => {
                   if (typeof obj[key] === 'string') obj[key] = "";
@@ -402,14 +415,57 @@ function doGet(e) {
 
   if (!isOpen) return null;
 
+  // If Hidden Mode is active, just show the restore eye button
+  if (isHidden) {
+      return (
+          <div className="fixed bottom-8 right-8 z-[201]">
+              <button 
+                  onClick={() => setIsHidden(false)}
+                  className="bg-brand-gold text-brand-dark p-4 rounded-full shadow-2xl hover:scale-110 transition-transform border-4 border-white animate-pulse"
+                  title="Hiện lại Admin Panel"
+              >
+                  <Eye size={24} />
+              </button>
+          </div>
+      );
+  }
+
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-brand-dark/95 backdrop-blur-sm animate-fade-in p-4 cursor-default">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-brand-dark/90 backdrop-blur-sm animate-fade-in p-4 cursor-default">
       <div className="bg-gray-50 w-full max-w-[1400px] h-[90vh] rounded-2xl shadow-2xl flex overflow-hidden ring-1 ring-white/10 relative">
         
-        {/* Close Button */}
-        <button onClick={onClose} className="absolute top-4 right-4 z-50 bg-white hover:bg-red-500 hover:text-white text-gray-500 rounded-full p-2 transition-all shadow-lg">
-            <X size={20} />
-        </button>
+        {/* Action Bar - Top Right */}
+        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+            {isAuthenticated && (
+                <>
+                   {/* Toggle Live Preview */}
+                   <button 
+                        onClick={() => setIsLivePreview(!isLivePreview)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-lg
+                            ${isLivePreview ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'}
+                        `}
+                        title={isLivePreview ? "Đang bật: Thay đổi sẽ cập nhật ngay lập tức" : "Đang tắt: Cần nhấn Lưu Nháp để cập nhật"}
+                   >
+                       <Zap size={14} fill={isLivePreview ? "currentColor" : "none"} />
+                       {isLivePreview ? "Live ON" : "Live OFF"}
+                   </button>
+
+                   {/* Hide Panel */}
+                   <button 
+                        onClick={() => setIsHidden(true)}
+                        className="bg-white hover:bg-gray-100 text-gray-600 rounded-full p-2 transition-all shadow-lg border border-gray-200"
+                        title="Ẩn Panel để xem Website"
+                   >
+                        <EyeOff size={20} />
+                   </button>
+                </>
+            )}
+            
+            {/* Close */}
+            <button onClick={onClose} className="bg-white hover:bg-red-500 hover:text-white text-gray-500 rounded-full p-2 transition-all shadow-lg border border-gray-200">
+                <X size={20} />
+            </button>
+        </div>
 
         {!isAuthenticated ? (
           // LOGIN SCREEN
@@ -509,13 +565,16 @@ function doGet(e) {
                             )}
                         </h3>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 pr-16"> {/* Padding right for absolute buttons */}
                          <button onClick={handleReset} className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors border border-transparent hover:border-red-100">
                              <RotateCcw size={14} /> Khôi phục gốc
                          </button>
-                         <button onClick={handleSaveLocal} className="px-6 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all">
-                             <Save size={14} /> Lưu Nháp
-                         </button>
+                         
+                         {!isLivePreview && (
+                             <button onClick={handleSaveLocal} className="px-6 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all">
+                                 <Save size={14} /> Lưu Nháp
+                             </button>
+                         )}
                          
                          {/* PUBLISH BUTTON - NEW STATE LOGIC */}
                          <button 
