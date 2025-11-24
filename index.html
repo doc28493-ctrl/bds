@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Vinhomes Green Paradise Cần Giờ - Masterpiece of Living</title>
+    <meta name="description" content="Siêu Đô thị ESG++ Xanh – Thông minh – Sinh thái & Tái sinh hàng đầu thế giới." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#012822', // Deepest Green
+                primary: '#0D4138', // Elegant Green
+                accent: '#1D6355', // Lighter Green
+                gold: '#D4AF37', // Metallic Gold
+                champagne: '#F3E5AB', // Light Gold
+                sand: '#F5F2EB', // Warm White
+                charcoal: '#1A1A1A'
+              }
+            },
+            fontFamily: {
+              sans: ['Manrope', 'sans-serif'],
+              serif: ['Cormorant Garamond', 'serif'], // Ultra luxury serif
+              display: ['Cinzel', 'serif'], // For majestic headings
+            },
+            backgroundImage: {
+              'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+              'gradient-luxury': 'linear-gradient(to right, #012822, #0D4138)',
+              'gold-shimmer': 'linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c)',
+            },
+            animation: {
+              'fade-up': 'fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'reveal': 'reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+              'scale-slow': 'scaleSlow 20s linear infinite',
+              'spin-slow': 'spin 15s linear infinite',
+              'pulse-gold': 'pulseGold 3s infinite',
+              'image-reveal': 'imageReveal 1.2s cubic-bezier(0.83, 0, 0.17, 1) forwards',
+              'text-shimmer': 'shimmer 3s linear infinite',
+              'aurora': 'aurora 10s ease infinite alternate',
+              'grain': 'grain 8s steps(10) infinite',
+              'ripple': 'ripple 3s infinite linear',
+            },
+            keyframes: {
+              fadeUp: {
+                '0%': { opacity: '0', transform: 'translateY(60px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              reveal: {
+                '0%': { transform: 'translateY(100%)' },
+                '100%': { transform: 'translateY(0)' },
+              },
+              scaleSlow: {
+                '0%': { transform: 'scale(1)' },
+                '100%': { transform: 'scale(1.1)' },
+              },
+              pulseGold: {
+                '0%, 100%': { boxShadow: '0 0 0 0 rgba(212, 175, 55, 0.4)' },
+                '50%': { boxShadow: '0 0 0 20px rgba(212, 175, 55, 0)' },
+              },
+              imageReveal: {
+                '0%': { clipPath: 'inset(0 100% 0 0)' },
+                '100%': { clipPath: 'inset(0 0 0 0)' }
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-200% center' },
+                '100%': { backgroundPosition: '200% center' }
+              },
+              aurora: {
+                '0%': { transform: 'translate(0, 0) scale(1)' },
+                '100%': { transform: 'translate(20px, -20px) scale(1.1)' }
+              },
+              grain: {
+                '0%, 100%': { transform: 'translate(0, 0)' },
+                '10%': { transform: 'translate(-5%, -10%)' },
+                '20%': { transform: 'translate(-15%, 5%)' },
+                '30%': { transform: 'translate(7%, -25%)' },
+                '40%': { transform: 'translate(-5%, 25%)' },
+                '50%': { transform: 'translate(-15%, 10%)' },
+                '60%': { transform: 'translate(15%, 0%)' },
+                '70%': { transform: 'translate(0%, 15%)' },
+                '80%': { transform: 'translate(3%, 35%)' },
+                '90%': { transform: 'translate(-10%, 10%)' },
+              },
+              ripple: {
+                '0%': { transform: 'scale(1)', opacity: '0.4' },
+                '100%': { transform: 'scale(1.5)', opacity: '0' }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Manrope:wght@200;300;400;600&display=swap" rel="stylesheet">
+    <style>
+      /* Luxury Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #012822;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #D4AF37;
+        border-radius: 0px;
+      }
+      
+      /* Smooth Selection */
+      ::selection {
+        background: #D4AF37;
+        color: #012822;
+      }
+
+      /* Kinetic Noise Overlay */
+      .bg-noise {
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.05;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        animation: grain 8s steps(10) infinite;
+      }
+
+      /* Typography Utilities */
+      .text-stroke {
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+        color: transparent;
+      }
+      
+      .text-gradient-gold {
+        background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 50%, #B8860B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .text-shimmer {
+        background: linear-gradient(to right, #aa771c 0%, #fcf6ba 50%, #aa771c 100%);
+        background-size: 200% auto;
+        color: transparent;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      /* CUSTOM CURSOR LOGIC */
+      /* By default, we DO NOT hide the cursor. We only hide it if the class is applied via JS */
+      body.custom-cursor-active {
+        cursor: none;
+      }
+      
+      /* Only apply custom cursor logic on fine pointer devices (mouse) */
+      @media (pointer: coarse) {
+        body.custom-cursor-active {
+          cursor: auto !important;
+        }
+        .custom-cursor {
+          display: none !important;
+        }
+      }
+
+      /* Force system cursor in specific areas (like iframes or admin inputs) */
+      .force-cursor-auto {
+        cursor: auto !important;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "path": "https://aistudiocdn.com/path@^0.12.7",
+    "vite": "https://aistudiocdn.com/vite@^7.2.4",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "url": "https://aistudiocdn.com/url@^0.11.4"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-brand-sand text-brand-dark antialiased overflow-x-hidden">
+    <div class="bg-noise"></div>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
