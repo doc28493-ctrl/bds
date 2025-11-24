@@ -14,7 +14,8 @@ const defaultContent = {
     title2: "Tâm điểm Vui chơi - giải trí - nghỉ dưỡng",
     desc: "Nơi hội tụ tinh hoa đất trời, kiến tạo chuẩn mực sống thượng lưu mới tại Việt Nam.", 
     bgImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=2874&auto=format&fit=crop",
-    videoUrl: "https://cdn.pixabay.com/video/2019/05/28/23989-339223350_large.mp4",
+    // CHANGED: New Waterfall/Stream video as requested (Fix complete)
+    videoUrl: "https://cdn.pixabay.com/video/2024/06/10/216134_small.mp4",
     stats_number: "2,870",
     stats_label: "Hecta Quy Mô"
   },
@@ -278,7 +279,8 @@ const defaultContent = {
   },
   // Fixed deployment URL
   config: {
-      googleSheetUrl: "https://script.google.com/macros/s/AKfycbwP96pv0aLvy3aSD4K4WkABieEdRNAVeZoNPaVLA8zwmBOXOXCjPNLZWm-6FuGc6js/exec" 
+      googleSheetUrl: "https://script.google.com/macros/s/AKfycbwP96pv0aLvy3aSD4K4WkABieEdRNAVeZoNPaVLA8zwmBOXOXCjPNLZWm-6FuGc6js/exec",
+      leadSheetUrl: "" // Separate Sheet for leads
   }
 };
 
@@ -305,7 +307,26 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (savedContent) {
       try {
         const parsed = JSON.parse(savedContent);
+        // FIX: Deep merge hero to preserve new keys (videoUrl) if missing in saved data
         localData = { ...defaultContent, ...parsed };
+        
+        if (parsed.hero) {
+            localData.hero = { ...defaultContent.hero, ...parsed.hero };
+            
+            // AUTOMATIC FIX FOR OLD VIDEO URL
+            // List of known old videos to replace
+            const oldVideos = [
+                "https://cdn.pixabay.com/video/2022/05/13/116905-709774653_large.mp4",
+                "https://cdn.pixabay.com/video/2020/05/25/40149-426567540_large.mp4",
+                "" // Replace empty strings too
+            ];
+            
+            // If current stored video matches an old one, or is missing, force the new default
+            if (!localData.hero.videoUrl || oldVideos.includes(localData.hero.videoUrl)) {
+                console.log("Migrating to new video URL...");
+                localData.hero.videoUrl = defaultContent.hero.videoUrl;
+            }
+        }
         
         // Force correct URL if it's missing or empty in the saved data
         if (!localData.config?.googleSheetUrl) {
@@ -333,9 +354,23 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     const merged = { 
                         ...localData, 
                         ...cloudData, 
-                        // Ensure config is preserved/enforced
-                        config: { googleSheetUrl: localData.config.googleSheetUrl }
+                        // FIX: Deep merge hero here too to ensure cloud data doesn't wipe out videoUrl if cloud is old
+                        hero: { ...localData.hero, ...cloudData.hero },
+                        config: { 
+                            googleSheetUrl: localData.config.googleSheetUrl,
+                            leadSheetUrl: cloudData.config?.leadSheetUrl || localData.config.leadSheetUrl
+                        }
                     };
+
+                    // Ensure videoUrl exists after cloud merge and check again for old videos
+                     const oldVideos = [
+                        "https://cdn.pixabay.com/video/2022/05/13/116905-709774653_large.mp4",
+                        "https://cdn.pixabay.com/video/2020/05/25/40149-426567540_large.mp4",
+                        ""
+                    ];
+                    if (!merged.hero.videoUrl || oldVideos.includes(merged.hero.videoUrl)) {
+                         merged.hero.videoUrl = defaultContent.hero.videoUrl;
+                    }
                     
                     setContent(merged);
                     // Update local storage to keep it fresh
@@ -395,7 +430,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const submitLead = async (data: any): Promise<boolean> => {
-      const targetUrl = content.config.googleSheetUrl;
+      // PRIORITY: Use Separate Lead Sheet if available, else fall back to Main Sheet
+      const targetUrl = content.config.leadSheetUrl || content.config.googleSheetUrl;
+      
       if (!targetUrl) {
           console.warn("No Google Sheet URL configured. Lead not saved to cloud.");
           return true; // Pretend success for UI
@@ -404,13 +441,15 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         // Construct form data
         const formData = new FormData();
+        // If we are sending to the dedicated lead sheet, the script handles doPost directly
+        // If we are sending to the combined sheet, we need 'action=contact'
+        // For safety, we always append action, but dedicated sheet might ignore it.
         formData.append('action', 'contact'); 
         formData.append('name', data.name);
         formData.append('phone', data.phone);
         formData.append('email', data.email);
         formData.append('interest', data.interest);
 
-        // Also add action to URL for safety
         const separator = targetUrl.includes('?') ? '&' : '?';
         const urlWithAction = `${targetUrl}${separator}action=contact`;
 

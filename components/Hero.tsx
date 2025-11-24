@@ -8,39 +8,37 @@ const Hero: React.FC = () => {
   return (
     <section className="relative w-full min-h-screen bg-[#012822] flex items-center justify-center overflow-hidden py-24 scroll-mt-28">
       
-      {/* Background Media: Video or Image with Breathing & Ripple Effect */}
-      <div className="absolute inset-0 z-0 animate-scale-slow">
-         {content.hero.videoUrl ? (
-               <video 
-                  autoPlay 
-                  muted 
-                  loop 
-                  playsInline 
-                  className="w-full h-full object-cover opacity-40 mix-blend-overlay" // Increased opacity slightly
-               >
-                  <source src={content.hero.videoUrl} type="video/mp4" />
-               </video>
+      {/* Background Media */}
+      <div className="absolute inset-0 z-0">
+          {content.hero.videoUrl ? (
+             <video 
+                src={content.hero.videoUrl} 
+                autoPlay 
+                muted 
+                loop 
+                playsInline 
+                className="w-full h-full object-cover transition-opacity duration-1000"
+             />
           ) : (
-              content.hero.bgImage && (
-                <div 
-                    className="absolute inset-0 opacity-20 mix-blend-overlay bg-cover bg-center" 
-                    style={{ backgroundImage: `url('${content.hero.bgImage}')` }}
-                ></div>
-              )
+             <div 
+                className="absolute inset-0 bg-cover bg-center animate-scale-slow" 
+                style={{ backgroundImage: `url('${content.hero.bgImage}')` }}
+             ></div>
           )}
-          {/* Gradients for readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/80 via-transparent to-[#012822]/90"></div>
+
+          {/* Layer 1: Dark Overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/60 via-[#012822]/20 to-[#012822]/90"></div>
           
-          {/* Water Ripple Overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-20 animate-ripple"></div>
+          {/* Layer 2: Nature Atmosphere (Mist/Fog effect) */}
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/foggy-birds.png')] opacity-30 animate-pulse"></div>
       </div>
 
-      {/* Background Decor - Subtle Aurora Glow */}
+      {/* Background Decor - Subtle Aurora Glow - Fixed Position */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-brand-primary/20 blur-[120px] rounded-full pointer-events-none animate-aurora"></div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 flex flex-col items-center justify-center text-center mt-12 md:mt-0">
         
-        {/* Top Title - "VINHOMES GREEN PARADISE" */}
+        {/* Top Title */}
         <h2 className="text-brand-champagne font-display font-bold text-xs md:text-xl lg:text-3xl tracking-[0.2em] uppercase mb-6 animate-fade-up border-b border-brand-gold/20 pb-4 inline-block opacity-90">
             {content.hero.label}
         </h2>
@@ -56,14 +54,13 @@ const Hero: React.FC = () => {
             <div className="h-[1px] w-12 md:w-32 bg-gradient-to-r from-brand-gold to-transparent"></div>
         </div>
 
-        {/* Main Heading "SIÊU ĐÔ THỊ BIỂN ESG++" */}
-        {/* Adjusted sizes for better mobile fit using fluid sizing */}
-        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-serif text-[#5F8D86] mb-6 md:mb-8 animate-fade-up leading-tight tracking-tight drop-shadow-2xl max-w-6xl mix-blend-lighten" style={{ animationDelay: '0.2s' }}>
+        {/* Main Heading */}
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-serif text-white mb-6 md:mb-8 animate-fade-up leading-tight tracking-tight drop-shadow-2xl max-w-6xl mix-blend-lighten" style={{ animationDelay: '0.2s' }}>
             {content.hero.title1}
         </h1>
 
-        {/* Subheading "Tâm điểm Vui chơi..." */}
-        <p className="font-display italic text-lg md:text-4xl lg:text-5xl text-[#5F8D86] font-light mb-12 animate-fade-up px-4 max-w-5xl leading-snug" style={{ animationDelay: '0.4s' }}>
+        {/* Subheading */}
+        <p className="font-display italic text-lg md:text-4xl lg:text-5xl text-white font-light mb-12 animate-fade-up px-4 max-w-5xl leading-snug" style={{ animationDelay: '0.4s' }}>
             <span className="font-serif italic mr-2 md:mr-3 text-2xl md:text-5xl lg:text-6xl text-shimmer animate-text-shimmer font-medium bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] via-[#fcf6ba] to-[#D4AF37]">
                 Tâm điểm
             </span> 
@@ -100,8 +97,8 @@ const Hero: React.FC = () => {
             </div>
             
             <div className="text-center">
-                <span className="block text-xl md:text-3xl font-display font-bold text-[#3A5F56] tracking-[0.2em] uppercase group-hover:text-brand-gold transition-colors duration-500">VINHOMES</span>
-                <span className="block text-[10px] md:text-sm text-[#3A5F56] tracking-[0.4em] uppercase mt-2 md:mt-3 border-t border-[#3A5F56]/30 pt-2 md:pt-3">GREEN PARADISE</span>
+                <span className="block text-xl md:text-3xl font-display font-bold text-white tracking-[0.2em] uppercase group-hover:text-brand-gold transition-colors duration-500">VINHOMES</span>
+                <span className="block text-[10px] md:text-sm text-white tracking-[0.4em] uppercase mt-2 md:mt-3 border-t border-white/30 pt-2 md:pt-3">GREEN PARADISE</span>
             </div>
         </div>
 

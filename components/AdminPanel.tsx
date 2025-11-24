@@ -302,8 +302,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       );
   };
 
-  // APPS SCRIPT CODE TEMPLATE
-  const appsScriptCode = `function doPost(e) {
+  // APPS SCRIPT CODE TEMPLATE 1: DATABASE/CONFIG
+  const appsScriptCodeConfig = `function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
 
@@ -327,24 +327,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       if (!viewSheet) viewSheet = sheet.insertSheet('CMS_View');
       viewSheet.clear();
       
-      // Header cho bảng dễ đọc
       viewSheet.appendRow(['PHÂN KHU (Section)', 'MÃ TRƯỜNG (Key)', 'NỘI DUNG (Value)']);
       viewSheet.getRange('A1:C1').setFontWeight('bold').setBackground('#D4AF37').setFontColor('white');
-      viewSheet.setColumnWidth(1, 150); // Cột Section
-      viewSheet.setColumnWidth(2, 250); // Cột Key
-      viewSheet.setColumnWidth(3, 500); // Cột Value
+      viewSheet.setColumnWidth(1, 150);
+      viewSheet.setColumnWidth(2, 250);
+      viewSheet.setColumnWidth(3, 500);
 
       var jsonData = JSON.parse(rawData);
       var rows = [];
 
-      // Hàm đệ quy làm phẳng Object thành các dòng
       function processObject(obj, prefix, sectionName) {
         for (var key in obj) {
-           if (key === 'config') continue; // Bỏ qua config kỹ thuật
-           
+           if (key === 'config') continue;
            var value = obj[key];
            var currentKey = prefix ? prefix + '.' + key : key;
-           var currentSection = sectionName || key; // Lấy root key làm section
+           var currentSection = sectionName || key;
 
            if (Array.isArray(value)) {
               value.forEach(function(item, index) {
@@ -357,15 +354,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
            } else if (typeof value === 'object' && value !== null) {
               processObject(value, currentKey, currentSection);
            } else {
-              // Giá trị cuối cùng (String/Number)
               rows.push([currentSection, currentKey, value]);
            }
         }
       }
-
       processObject(jsonData, '', '');
 
-      // Ghi dữ liệu vào bảng CMS_View
       if (rows.length > 0) {
         viewSheet.getRange(2, 1, rows.length, 3).setValues(rows);
       }
@@ -373,28 +367,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       return ContentService.createTextOutput(JSON.stringify({result: 'success', type: 'config_saved'}))
         .setMimeType(ContentService.MimeType.JSON);
     }
-
-    // 2. ACTION: LƯU LEAD (Khách hàng đăng ký)
-    if (action == 'contact') {
-      var leadSheet = sheet.getSheetByName('Leads');
-      if (!leadSheet) {
-        leadSheet = sheet.insertSheet('Leads');
-        leadSheet.appendRow(['Thời gian', 'Họ tên', 'Số điện thoại', 'Email', 'Sản phẩm quan tâm']);
-        leadSheet.getRange('A1:E1').setFontWeight('bold').setBackground('#0D4138').setFontColor('white');
-      }
-      
-      leadSheet.appendRow([
-        new Date(),
-        e.parameter.name,
-        e.parameter.phone,
-        e.parameter.email,
-        e.parameter.interest
-      ]);
-      
-      return ContentService.createTextOutput(JSON.stringify({result: 'success', type: 'lead_saved'}))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    
   } catch (e) {
     return ContentService.createTextOutput(JSON.stringify({result: 'error', error: e.toString()}))
       .setMimeType(ContentService.MimeType.JSON);
@@ -404,13 +376,53 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 }
 
 function doGet(e) {
-  // Trả về dữ liệu cấu hình từ Sheet 'Database' để Website load nội dung
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Database');
   var data = "{}";
   if (sheet) {
      data = sheet.getRange('A1').getValue();
   }
   return ContentService.createTextOutput(data).setMimeType(ContentService.MimeType.JSON);
+}`;
+
+  // APPS SCRIPT CODE TEMPLATE 2: LEADS (KHÁCH HÀNG)
+  const appsScriptCodeLeads = `function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    // Tự động chọn sheet đầu tiên hoặc tạo sheet Leads
+    var leadSheet = sheet.getSheetByName('Leads');
+    if (!leadSheet) {
+      leadSheet = sheet.insertSheet('Leads');
+      leadSheet.appendRow(['Thời gian', 'Họ tên', 'Số điện thoại', 'Email', 'Sản phẩm quan tâm']);
+      leadSheet.getRange('A1:E1').setFontWeight('bold').setBackground('#0D4138').setFontColor('white');
+      leadSheet.setColumnWidth(1, 150);
+      leadSheet.setColumnWidth(2, 200);
+      leadSheet.setColumnWidth(3, 150);
+      leadSheet.setColumnWidth(4, 250);
+      leadSheet.setColumnWidth(5, 200);
+    }
+
+    var timestamp = new Date().toLocaleString('vi-VN');
+    
+    leadSheet.appendRow([
+      timestamp,
+      e.parameter.name,
+      e.parameter.phone,
+      e.parameter.email,
+      e.parameter.interest
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({result: 'success'}))
+      .setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({result: 'error', error: e.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }`;
 
   if (!isOpen) return null;
@@ -600,56 +612,68 @@ function doGet(e) {
                     <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                         {activeTab === 'config' ? (
                             <div className="space-y-8">
+                                {/* SECTION 1: DATABASE CONFIG */}
                                 <div>
-                                    <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Google Web App URL</label>
-                                    <div className="flex gap-2">
-                                        <input 
-                                            type="text" 
-                                            value={tempContent.config?.googleSheetUrl || ''}
-                                            onChange={(e) => updateDeepState(['config', 'googleSheetUrl'], e.target.value)}
-                                            className="flex-1 bg-white border border-gray-300 p-3 rounded focus:border-brand-primary focus:outline-none font-mono text-sm"
-                                            placeholder="https://script.google.com/macros/s/.../exec"
-                                        />
+                                    <h3 className="font-bold text-lg text-brand-dark mb-4 border-b pb-2">1. Cấu hình Sheet Dữ Liệu (CMS)</h3>
+                                    <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Google Web App URL (Database)</label>
+                                    <input 
+                                        type="text" 
+                                        value={tempContent.config?.googleSheetUrl || ''}
+                                        onChange={(e) => updateDeepState(['config', 'googleSheetUrl'], e.target.value)}
+                                        className="w-full bg-white border border-gray-300 p-3 rounded focus:border-brand-primary focus:outline-none font-mono text-sm"
+                                        placeholder="https://script.google.com/macros/s/.../exec"
+                                    />
+                                    
+                                    {/* Code Block 1 */}
+                                    <div className="mt-4 bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-xs font-bold text-gray-500">Mã Script (Dành cho Sheet Quản trị)</span>
+                                            <button onClick={() => copyToClipboard(appsScriptCodeConfig)} className="text-brand-primary text-xs font-bold flex items-center gap-1 hover:text-brand-gold"><Copy size={12}/> Copy Code</button>
+                                        </div>
+                                        <pre className="bg-[#1e293b] text-gray-300 p-3 rounded overflow-x-auto text-[10px] font-mono h-32">
+                                            {appsScriptCodeConfig}
+                                        </pre>
                                     </div>
-                                    <p className="text-[10px] text-gray-400 mt-1">Dán URL từ bước Deployment của Google Apps Script vào đây.</p>
                                 </div>
 
-                                <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
-                                    <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
-                                        <Settings size={16} />
-                                        Hướng dẫn Cài đặt Google Apps Script (Backend)
-                                    </h4>
-                                    
-                                    <ol className="list-decimal list-inside text-sm text-blue-900 space-y-3 mb-6">
-                                        <li>Tạo một <b>Google Sheet</b> mới.</li>
-                                        <li>Vào menu <b>Tiện ích mở rộng (Extensions)</b> → chọn <b>Apps Script</b>.</li>
-                                        <li>Xóa toàn bộ code cũ và dán đoạn mã bên dưới vào.</li>
-                                        <li>Nhấn <b>Lưu (Save)</b>.</li>
-                                        <li>Nhấn nút <b>Triển khai (Deploy)</b> (màu xanh góc phải) → chọn <b>Tùy chọn triển khai mới (New deployment)</b>.</li>
-                                        <li>Chọn loại: <b>Ứng dụng web (Web app)</b>.</li>
-                                        <li>Cấu hình: 
-                                            <ul className="list-disc list-inside ml-6 mt-1 opacity-80">
-                                                <li>Mô tả: Tùy ý (VD: Vinhomes Backend)</li>
-                                                <li>Thực thi dưới dạng: <b>Tôi (Me)</b></li>
-                                                <li>Ai có quyền truy cập: <b>Bất kỳ ai (Anyone)</b> (QUAN TRỌNG)</li>
-                                            </ul>
-                                        </li>
-                                        <li>Nhấn <b>Triển khai</b> → Cấp quyền truy cập nếu được hỏi.</li>
-                                        <li>Copy <b>URL ứng dụng web</b> (có đuôi <code>/exec</code>) và dán vào ô bên trên.</li>
-                                    </ol>
+                                {/* SECTION 2: LEADS CONFIG */}
+                                <div>
+                                    <h3 className="font-bold text-lg text-brand-dark mb-4 border-b pb-2">2. Cấu hình Sheet Khách Hàng (Leads)</h3>
+                                    <label className="block text-sm font-bold uppercase text-brand-dark mb-2">Google Web App URL (Leads - Tùy chọn)</label>
+                                    <input 
+                                        type="text" 
+                                        value={tempContent.config?.leadSheetUrl || ''}
+                                        onChange={(e) => updateDeepState(['config', 'leadSheetUrl'], e.target.value)}
+                                        className="w-full bg-white border border-gray-400 p-3 rounded focus:border-brand-primary focus:outline-none font-mono text-sm text-brand-dark shadow-sm"
+                                        placeholder="https://script.google.com/macros/s/.../exec (Để trống sẽ dùng chung Sheet trên)"
+                                    />
+                                    <p className="text-sm text-gray-700 mt-2 mb-4 font-medium">
+                                        Nếu bạn muốn lưu thông tin khách hàng sang một File Sheet khác riêng biệt, hãy tạo Sheet mới và dán link vào đây.
+                                    </p>
 
-                                    <div className="relative">
-                                        <div className="absolute top-2 right-2">
-                                            <button 
-                                                onClick={() => copyToClipboard(appsScriptCode)}
-                                                className="bg-white/20 hover:bg-white/40 text-blue-900 p-2 rounded transition-colors flex items-center gap-2 text-xs font-bold"
-                                            >
-                                                <Copy size={14} /> Sao chép Code
-                                            </button>
+                                    {/* Code Block 2 */}
+                                    <div className="bg-green-100 border border-green-300 p-6 rounded-lg shadow-sm">
+                                        <h4 className="font-bold text-green-950 mb-3 flex items-center gap-2 text-base">
+                                            <Settings size={18} />
+                                            Mã Script (Dành cho Sheet Khách hàng - Leads)
+                                        </h4>
+                                        <p className="text-sm text-green-900 mb-4 font-medium">
+                                            Copy mã này vào Google Apps Script của Sheet Khách Hàng mới -> Deploy -> Dán link vào ô trên.
+                                        </p>
+                                        
+                                        <div className="relative">
+                                            <div className="absolute top-2 right-2">
+                                                <button 
+                                                    onClick={() => copyToClipboard(appsScriptCodeLeads)}
+                                                    className="bg-white hover:bg-gray-100 text-green-900 p-2 rounded shadow transition-colors flex items-center gap-2 text-xs font-bold border border-green-200"
+                                                >
+                                                    <Copy size={14} /> Copy
+                                                </button>
+                                            </div>
+                                            <pre className="bg-[#022c22] text-green-50 p-4 rounded-lg overflow-x-auto text-xs font-mono border border-green-800 shadow-inner">
+                                                {appsScriptCodeLeads}
+                                            </pre>
                                         </div>
-                                        <pre className="bg-[#1e293b] text-blue-100 p-4 rounded-lg overflow-x-auto text-xs font-mono border border-blue-900/20 shadow-inner">
-                                            {appsScriptCode}
-                                        </pre>
                                     </div>
                                 </div>
                             </div>

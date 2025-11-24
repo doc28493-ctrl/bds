@@ -11,7 +11,7 @@ const LandingIntro: React.FC<{ onExplore: () => void }> = ({ onExplore }) => {
   }, []);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-brand-dark flex flex-col items-center justify-end z-40">
+    <div className="hidden lg:flex relative h-screen w-full overflow-hidden bg-brand-dark flex-col items-center justify-end z-40">
       
       {/* Banner Image - Page 1 */}
       <div className={`absolute inset-0 transition-transform duration-[2.5s] ease-out ${loaded ? 'scale-100' : 'scale-110'}`}>
