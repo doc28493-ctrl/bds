@@ -658,7 +658,7 @@ function doGet(e) {
                                             Mã Script (Dành cho Sheet Khách hàng - Leads)
                                         </h4>
                                         <p className="text-sm text-green-900 mb-4 font-medium">
-                                            Copy mã này vào Google Apps Script của Sheet Khách Hàng mới -> Deploy -> Dán link vào ô trên.
+                                            Copy mã này vào Google Apps Script của Sheet Khách Hàng mới &rarr; Deploy &rarr; Dán link vào ô trên.
                                         </p>
                                         
                                         <div className="relative">
