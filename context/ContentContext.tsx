@@ -320,7 +320,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     // 2. If Google Sheet URL exists, try to fetch fresh data (Real-time sync)
     if (localData.config.googleSheetUrl) {
-        const fetchUrl = `${localData.config.googleSheetUrl}`;
+        // Prevent caching by appending timestamp
+        const separator = localData.config.googleSheetUrl.includes('?') ? '&' : '?';
+        const fetchUrl = `${localData.config.googleSheetUrl}${separator}t=${Date.now()}`;
         
         fetch(fetchUrl)
             .then(res => res.json())

@@ -23,22 +23,22 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    // Start exit animation after 2.5 seconds
+    // Tăng tốc độ Intro: Chỉ hiện 1s rồi bắt đầu hiệu ứng biến mất trong 1s => Tổng ~2s
     const timer = setTimeout(() => {
       setIsExiting(true);
       // Notify parent slightly later to unmount
-      setTimeout(onComplete, 800); // Faster exit
-    }, 2500);
+      setTimeout(onComplete, 1000); // Faster exit (1s)
+    }, 1000); // Wait only 1s before exiting
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
     <div 
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-brand-dark transition-transform duration-1000 cubic-bezier(0.77, 0, 0.175, 1) ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-brand-dark transition-transform duration-500 cubic-bezier(0.77, 0, 0.175, 1) ${
         isExiting ? '-translate-y-full' : 'translate-y-0'
       }`}
     >
-      <div className={`flex flex-col items-center transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`flex flex-col items-center transition-opacity duration-300 ${isExiting ? 'opacity-0' : 'opacity-100'}`}>
         <div className="relative mb-6">
            <div className="w-24 h-24 rounded-full border border-brand-gold/30 animate-spin-slow"></div>
            <div className="absolute inset-0 flex items-center justify-center">
@@ -280,6 +280,15 @@ const MainApp: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
   const navLinks = [
     { name: 'TRANG CHỦ', href: '#hero', id: 'hero' },
     { name: 'TỔNG QUAN', href: '#overview', id: 'overview' },
@@ -350,6 +359,7 @@ const MainApp: React.FC = () => {
               <a 
                 key={link.name} 
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.id)}
                 className={`text-[10px] xl:text-[11px] font-bold tracking-widest uppercase transition-all duration-300 relative group py-2 font-sans
                     ${activeSection === link.id ? 'text-brand-gold' : 'text-white/80 hover:text-brand-gold'}
                 `}
@@ -384,7 +394,7 @@ const MainApp: React.FC = () => {
                   className={`font-serif text-xl font-bold transition-all duration-300 transform hover:scale-110 uppercase tracking-widest
                       ${activeSection === link.id ? 'text-brand-gold' : 'text-white'}
                   `}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(e) => handleNavClick(e, link.id)}
                 >
                   {link.name}
                 </a>
@@ -394,18 +404,19 @@ const MainApp: React.FC = () => {
       </nav>
 
       {/* Main Content with Refs */}
+      {/* CRITICAL: Added scroll-mt-28/32 to wrapper divs to ensure smooth scrolling lands correctly below the fixed header */}
       <main className="relative z-30 bg-brand-sand">
-        <div id="hero" ref={setSectionRef('hero')}><Hero /></div>
-        <div id="overview" ref={setSectionRef('overview')}><Overview /></div>
+        <div id="hero" ref={setSectionRef('hero')} className="scroll-mt-24 lg:scroll-mt-32"><Hero /></div>
+        <div id="overview" ref={setSectionRef('overview')} className="scroll-mt-24 lg:scroll-mt-32"><Overview /></div>
         <ESGConcept />
-        <div id="location" ref={setSectionRef('location')}><Location /></div>
-        <div id="amenities" ref={setSectionRef('amenities')}><Amenities /></div>
-        <div id="masterplan" ref={setSectionRef('masterplan')}><MasterPlan /></div>
-        <div id="zones" ref={setSectionRef('zones')}><Zones /></div>
+        <div id="location" ref={setSectionRef('location')} className="scroll-mt-24 lg:scroll-mt-32"><Location /></div>
+        <div id="amenities" ref={setSectionRef('amenities')} className="scroll-mt-24 lg:scroll-mt-32"><Amenities /></div>
+        <div id="masterplan" ref={setSectionRef('masterplan')} className="scroll-mt-24 lg:scroll-mt-32"><MasterPlan /></div>
+        <div id="zones" ref={setSectionRef('zones')} className="scroll-mt-24 lg:scroll-mt-32"><Zones /></div>
         <InvestmentReasons />
-        <div id="video" ref={setSectionRef('video')}><VideoSection /></div>
-        <div id="gallery" ref={setSectionRef('gallery')}><Gallery /></div>
-        <div id="contact" ref={setSectionRef('contact')}><ContactForm /></div>
+        <div id="video" ref={setSectionRef('video')} className="scroll-mt-24 lg:scroll-mt-32"><VideoSection /></div>
+        <div id="gallery" ref={setSectionRef('gallery')} className="scroll-mt-24 lg:scroll-mt-32"><Gallery /></div>
+        <div id="contact" ref={setSectionRef('contact')} className="scroll-mt-24 lg:scroll-mt-32"><ContactForm /></div>
       </main>
 
       <Footer onOpenAdmin={() => setIsAdminOpen(true)} />

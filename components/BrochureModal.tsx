@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Download, ShieldCheck } from 'lucide-react';
+import { X, Download, ShieldCheck, Loader2 } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 
 interface BrochureModalProps {
@@ -8,20 +8,35 @@ interface BrochureModalProps {
 }
 
 const BrochureModal: React.FC<BrochureModalProps> = ({ isOpen, onClose }) => {
-    const { content } = useContent();
+    const { content, submitLead } = useContent();
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [name, setName] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate API call
-        setTimeout(() => {
+        setIsLoading(true);
+
+        // Gửi dữ liệu về Google Sheet
+        // Trường 'interest' được gán cứng là "Tải Brochure" để phân biệt nguồn khách hàng
+        const success = await submitLead({
+            name: name,
+            phone: phone,
+            email: email,
+            interest: 'Tải Brochure/Tài Liệu'
+        });
+
+        setIsLoading(false);
+
+        if (success) {
             setIsSubmitted(true);
-        }, 1000);
+        } else {
+            alert("Có lỗi kết nối. Vui lòng thử lại hoặc liên hệ Hotline.");
+        }
     };
 
     return (
@@ -83,6 +98,7 @@ const BrochureModal: React.FC<BrochureModalProps> = ({ isOpen, onClose }) => {
                                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-brand-gold transition-all"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
+                                        disabled={isLoading}
                                     />
                                 </div>
                                 <div>
@@ -93,6 +109,7 @@ const BrochureModal: React.FC<BrochureModalProps> = ({ isOpen, onClose }) => {
                                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-brand-gold transition-all"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
+                                        disabled={isLoading}
                                     />
                                 </div>
                                 <div>
@@ -103,15 +120,26 @@ const BrochureModal: React.FC<BrochureModalProps> = ({ isOpen, onClose }) => {
                                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-brand-gold transition-all"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
+                                        disabled={isLoading}
                                     />
                                 </div>
 
                                 <button 
                                     type="submit"
-                                    className="w-full py-4 bg-brand-dark text-white font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
+                                    disabled={isLoading}
+                                    className="w-full py-4 bg-brand-dark text-white font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition-all duration-300 shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
-                                    <Download size={18} />
-                                    {content.popup.buttonText}
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 size={18} className="animate-spin" />
+                                            Đang xử lý...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Download size={18} />
+                                            {content.popup.buttonText}
+                                        </>
+                                    )}
                                 </button>
                             </form>
                             
