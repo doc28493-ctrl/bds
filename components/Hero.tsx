@@ -26,11 +26,10 @@ const Hero: React.FC = () => {
              ></div>
           )}
 
-          {/* Layer 1: Dark Overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/60 via-[#012822]/20 to-[#012822]/90"></div>
+          {/* Layer 1: Gradient Overlay - Adjusted to be lighter (40% -> 30% top, 20% -> 0% mid) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/30 via-transparent to-[#012822]/80"></div>
           
-          {/* Layer 2: Nature Atmosphere (Mist/Fog effect) */}
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/foggy-birds.png')] opacity-30 animate-pulse"></div>
+          {/* REMOVED: Foggy birds pattern layer as requested */}
       </div>
 
       {/* Background Decor - Subtle Aurora Glow - Fixed Position */}
