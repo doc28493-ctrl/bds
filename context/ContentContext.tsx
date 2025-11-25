@@ -13,7 +13,8 @@ const defaultContent = {
     title1: "SIÊU ĐÔ THỊ BIỂN ESG++",
     title2: "Tâm điểm Vui chơi - giải trí - nghỉ dưỡng",
     desc: "Nơi hội tụ tinh hoa đất trời, kiến tạo chuẩn mực sống thượng lưu mới tại Việt Nam.", 
-    bgImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=2874&auto=format&fit=crop",
+    // CHANGED: New High Quality Placeholder Image
+    bgImage: "https://i.imgur.com/weCtdqV.jpeg",
     // CHANGED: New Waterfall/Stream video as requested (Fix complete)
     videoUrl: "https://cdn.pixabay.com/video/2024/06/10/216134_small.mp4",
     stats_number: "2,870",
@@ -314,17 +315,21 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
             localData.hero = { ...defaultContent.hero, ...parsed.hero };
             
             // AUTOMATIC FIX FOR OLD VIDEO URL
-            // List of known old videos to replace
             const oldVideos = [
                 "https://cdn.pixabay.com/video/2022/05/13/116905-709774653_large.mp4",
                 "https://cdn.pixabay.com/video/2020/05/25/40149-426567540_large.mp4",
-                "" // Replace empty strings too
+                "" 
             ];
-            
-            // If current stored video matches an old one, or is missing, force the new default
             if (!localData.hero.videoUrl || oldVideos.includes(localData.hero.videoUrl)) {
-                console.log("Migrating to new video URL...");
                 localData.hero.videoUrl = defaultContent.hero.videoUrl;
+            }
+
+            // AUTOMATIC FIX FOR OLD BG IMAGE (NEW)
+            const oldBgImages = [
+                "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=2874&auto=format&fit=crop"
+            ];
+            if (!localData.hero.bgImage || oldBgImages.includes(localData.hero.bgImage)) {
+                 localData.hero.bgImage = defaultContent.hero.bgImage;
             }
         }
         
@@ -370,6 +375,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     ];
                     if (!merged.hero.videoUrl || oldVideos.includes(merged.hero.videoUrl)) {
                          merged.hero.videoUrl = defaultContent.hero.videoUrl;
+                    }
+
+                    // Ensure bgImage is updated in cloud data too if needed (unlikely but safe)
+                    const oldBgImages = [
+                        "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=2874&auto=format&fit=crop"
+                    ];
+                    if (!merged.hero.bgImage || oldBgImages.includes(merged.hero.bgImage)) {
+                         merged.hero.bgImage = defaultContent.hero.bgImage;
                     }
                     
                     setContent(merged);

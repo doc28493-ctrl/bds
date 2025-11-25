@@ -32,6 +32,7 @@ const Hero: React.FC = () => {
           {content.hero.videoUrl && (
              <video 
                 src={content.hero.videoUrl} 
+                preload="auto"
                 autoPlay 
                 muted 
                 loop 
