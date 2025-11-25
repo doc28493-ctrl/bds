@@ -30,7 +30,8 @@ const InvestmentReasons: React.FC = () => {
             {items.map((item, index) => (
                 <div 
                     key={index} 
-                    className="bg-white p-8 rounded-sm shadow-sm hover:shadow-xl transition-all duration-500 group border border-brand-dark/5 hover:-translate-y-2"
+                    className="bg-white p-8 rounded-sm shadow-sm hover:shadow-xl transition-all duration-500 group border border-brand-dark/5 hover:-translate-y-2 opacity-0 animate-fade-up"
+                    style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'forwards' }}
                 >
                     <div className="w-16 h-16 bg-brand-primary/5 rounded-full flex items-center justify-center text-brand-primary mb-6 group-hover:bg-brand-primary group-hover:text-white transition-colors duration-500">
                         {item.icon}

@@ -430,7 +430,7 @@ function doGet(e) {
   // If Hidden Mode is active, just show the restore eye button
   if (isHidden) {
       return (
-          <div className="fixed bottom-8 right-8 z-[201]">
+          <div className="fixed bottom-8 right-8 z-[10001]">
               <button 
                   onClick={() => setIsHidden(false)}
                   className="bg-brand-gold text-brand-dark p-4 rounded-full shadow-2xl hover:scale-110 transition-transform border-4 border-white animate-pulse"
@@ -443,7 +443,7 @@ function doGet(e) {
   }
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-brand-dark/90 backdrop-blur-sm animate-fade-in p-4 cursor-default">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-brand-dark/90 backdrop-blur-sm animate-fade-in p-4 cursor-default">
       <div className="bg-gray-50 w-full max-w-[1400px] h-[90vh] rounded-2xl shadow-2xl flex overflow-hidden ring-1 ring-white/10 relative">
         
         {/* Action Bar - Top Right */}
@@ -658,7 +658,7 @@ function doGet(e) {
                                             Mã Script (Dành cho Sheet Khách hàng - Leads)
                                         </h4>
                                         <p className="text-sm text-green-900 mb-4 font-medium">
-                                            Copy mã này vào Google Apps Script của Sheet Khách Hàng mới &rarr; Deploy &rarr; Dán link vào ô trên.
+                                            Copy mã này vào Google Apps Script của Sheet Khách Hàng mới &rarr; Deploy &rarr; Dán liên kết vào ô trên.
                                         </p>
                                         
                                         <div className="relative">

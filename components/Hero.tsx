@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useContent } from '../context/ContentContext';
-import { Rotate3D } from 'lucide-react';
+import { Rotate3D, ArrowDown } from 'lucide-react';
 
 const Hero: React.FC = () => {
   const { content } = useContent();
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Trigger animations after mount
+    setTimeout(() => setIsLoaded(true), 100);
+  }, []);
 
   return (
-    <section className="relative w-full min-h-screen bg-[#012822] flex items-center justify-center overflow-hidden py-24 scroll-mt-28">
+    <section className="relative w-full h-screen bg-[#012822] flex items-center justify-center overflow-hidden py-0 scroll-mt-0">
       
-      {/* Background Media */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Media with Curtain Reveal Effect */}
+      <div className={`absolute inset-0 z-0 transition-all duration-[2000ms] cubic-bezier(0.77, 0, 0.175, 1) ${isLoaded ? 'clip-path-full scale-100' : 'clip-path-curtain scale-110'}`}
+           style={{ 
+             clipPath: isLoaded ? 'inset(0 0 0 0)' : 'inset(0 15% 0 15%)', // Mobile optimized curtain
+             transform: isLoaded ? 'scale(1)' : 'scale(1.15)' 
+           }}
+      >
           {content.hero.videoUrl ? (
              <video 
                 src={content.hero.videoUrl} 
@@ -26,78 +37,60 @@ const Hero: React.FC = () => {
              ></div>
           )}
 
-          {/* Layer 1: Gradient Overlay - Adjusted to be lighter (40% -> 30% top, 20% -> 0% mid) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/30 via-transparent to-[#012822]/80"></div>
-          
-          {/* REMOVED: Foggy birds pattern layer as requested */}
+          {/* Layer 1: Cinematic Grading Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/40 via-transparent to-[#012822]/90 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
-      {/* Background Decor - Subtle Aurora Glow - Fixed Position */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-brand-primary/20 blur-[120px] rounded-full pointer-events-none animate-aurora"></div>
-
-      <div className="container mx-auto px-4 md:px-6 relative z-10 flex flex-col items-center justify-center text-center mt-12 md:mt-0">
+      {/* Hero Content - Staggered Reveal */}
+      <div className="container mx-auto px-4 md:px-6 relative z-10 flex flex-col items-center justify-center text-center h-full pt-20">
         
-        {/* Top Title */}
-        <h2 className="text-brand-champagne font-display font-bold text-xs md:text-xl lg:text-3xl tracking-[0.2em] uppercase mb-6 animate-fade-up border-b border-brand-gold/20 pb-4 inline-block opacity-90">
-            {content.hero.label}
-        </h2>
-
-        {/* Decorative Divider */}
-        <div className="flex items-center justify-center gap-4 mb-8 md:mb-10 opacity-60">
-            <div className="h-[1px] w-12 md:w-32 bg-gradient-to-l from-brand-gold to-transparent"></div>
-            <div className="text-brand-gold">
-                <svg width="20" height="10" viewBox="0 0 40 20" fill="none" className="md:w-[30px] md:h-[15px]">
-                     <path d="M20 0C20 0 22 10 30 10C38 10 40 20 40 20M20 0C20 0 18 10 10 10C2 10 0 20 0 20" stroke="currentColor" strokeWidth="1"/>
-                </svg>
-            </div>
-            <div className="h-[1px] w-12 md:w-32 bg-gradient-to-r from-brand-gold to-transparent"></div>
+        {/* Top Title - Slide Down */}
+        <div className={`transition-all duration-1000 delay-500 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
+            <h2 className="text-brand-champagne font-display font-bold text-xs md:text-sm lg:text-base tracking-[0.3em] uppercase mb-6 border border-brand-gold/30 px-6 py-2 rounded-full bg-black/20 backdrop-blur-md">
+                {content.hero.label}
+            </h2>
         </div>
 
-        {/* Main Heading */}
-        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-serif text-white mb-6 md:mb-8 animate-fade-up leading-tight tracking-tight drop-shadow-2xl max-w-6xl mix-blend-lighten" style={{ animationDelay: '0.2s' }}>
-            {content.hero.title1}
+        {/* Main Heading - SPLIT WORD ANIMATION (VIP PRO EFFECT) */}
+        <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] leading-[0.9] font-serif text-white mb-8 tracking-tighter mix-blend-overlay opacity-90 flex flex-wrap justify-center gap-x-2 md:gap-x-6">
+            {/* Split Title 1 into words for staggered reveal */}
+            {content.hero.title1.split(' ').map((word, index) => (
+                <span key={index} className="inline-block overflow-hidden py-2">
+                    <span 
+                        className={`inline-block transition-transform duration-[1.5s] cubic-bezier(0.19, 1, 0.22, 1) ${isLoaded ? 'translate-y-0' : 'translate-y-[120%]'}`}
+                        style={{ transitionDelay: `${700 + (index * 100)}ms` }}
+                    >
+                        {word}
+                    </span>
+                </span>
+            ))}
         </h1>
 
-        {/* Subheading */}
-        <p className="font-display italic text-lg md:text-4xl lg:text-5xl text-white font-light mb-12 animate-fade-up px-4 max-w-5xl leading-snug" style={{ animationDelay: '0.4s' }}>
-            <span className="font-serif italic mr-2 md:mr-3 text-2xl md:text-5xl lg:text-6xl text-shimmer animate-text-shimmer font-medium bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] via-[#fcf6ba] to-[#D4AF37]">
-                Tâm điểm
-            </span> 
-            <span className="block md:inline mt-2 md:mt-0">{content.hero.title2}</span>
-        </p>
+        {/* Subheading - Fade Up */}
+        <div className={`max-w-4xl mx-auto transition-all duration-1000 delay-[1200ms] ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            <p className="font-sans text-lg md:text-xl lg:text-2xl text-gray-200 font-light mb-12 px-4 leading-relaxed">
+                <span className="text-brand-gold font-serif italic text-2xl md:text-3xl mr-2">Tâm điểm</span> 
+                {content.hero.title2}
+            </p>
+        </div>
         
-        {/* 360 Virtual Tour Button */}
-        <div className="mb-16 animate-fade-up" style={{ animationDelay: '0.5s' }}>
-            <button className="group relative flex items-center gap-4 px-6 py-3 md:px-8 md:py-3 bg-white/5 border border-brand-gold/30 rounded-full hover:bg-brand-gold/10 hover:border-brand-gold transition-all duration-300 backdrop-blur-sm">
-                <div className="relative">
-                    <Rotate3D size={20} className="md:w-6 md:h-6 text-brand-gold group-hover:rotate-180 transition-transform duration-700" />
-                    <div className="absolute inset-0 bg-brand-gold blur-lg opacity-20 group-hover:opacity-40"></div>
+        {/* CTA Button - Scale Up */}
+        <div className={`transition-all duration-1000 delay-[1400ms] ${isLoaded ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}>
+            <button className="group relative flex items-center gap-4 px-8 py-4 bg-white/5 border border-white/20 rounded-full hover:bg-brand-gold hover:border-brand-gold transition-all duration-500 backdrop-blur-md overflow-hidden">
+                <div className="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+                <div className="relative z-10 flex items-center gap-3">
+                    <Rotate3D size={20} className="text-brand-gold group-hover:text-brand-dark transition-colors duration-500 group-hover:rotate-180" />
+                    <span className="text-white group-hover:text-brand-dark font-bold uppercase tracking-widest text-xs">Virtual Tour 360°</span>
                 </div>
-                <span className="text-brand-gold font-bold uppercase tracking-widest text-[10px] md:text-xs">Trải nghiệm 360° Virtual Tour</span>
-                <div className="absolute -inset-1 rounded-full border border-brand-gold/20 scale-100 group-hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
             </button>
         </div>
 
-        {/* Bottom Logo - Large */}
-        <div className="flex flex-col items-center animate-fade-up mt-4 opacity-80 hover:opacity-100 transition-opacity duration-700 cursor-pointer group" style={{ animationDelay: '0.6s' }}>
-            {/* Abstract Leaf/Bird Logo Shape */}
-            <div className="w-16 h-16 md:w-28 md:h-28 mb-4 md:mb-6 relative transition-transform duration-700 group-hover:scale-110">
-                 <svg viewBox="0 0 100 100" fill="none" className="w-full h-full text-[#8BAEA8]">
-                    <path d="M50 95C50 95 80 60 80 40C80 20 60 10 50 10C40 10 20 20 20 40C20 60 50 95 50 95Z" stroke="currentColor" strokeWidth="1" className="opacity-30" />
-                    <path d="M50 80C50 80 20 50 30 30C40 10 60 30 50 80Z" fill="currentColor" className="text-brand-primary" />
-                    <path d="M50 80C50 80 80 50 70 30C60 10 40 30 50 80Z" fill="url(#grad1)" />
-                    <defs>
-                        <linearGradient id="grad1" x1="50" y1="80" x2="70" y2="30">
-                            <stop stopColor="#D4AF37" />
-                            <stop offset="1" stopColor="#8BAEA8" stopOpacity="0" />
-                        </linearGradient>
-                    </defs>
-                 </svg>
-            </div>
-            
-            <div className="text-center">
-                <span className="block text-xl md:text-3xl font-display font-bold text-white tracking-[0.2em] uppercase group-hover:text-brand-gold transition-colors duration-500">VINHOMES</span>
-                <span className="block text-[10px] md:text-sm text-white tracking-[0.4em] uppercase mt-2 md:mt-3 border-t border-white/30 pt-2 md:pt-3">GREEN PARADISE</span>
+        {/* Bottom Scroll Indicator */}
+        <div className={`absolute bottom-12 left-1/2 -translate-x-1/2 transition-all duration-1000 delay-[1800ms] ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}>
+            <div className="flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity cursor-pointer" onClick={() => document.getElementById('overview')?.scrollIntoView({behavior: 'smooth'})}>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-white/70">Khám Phá</span>
+                <ArrowDown className="text-brand-gold w-5 h-5" />
             </div>
         </div>
 

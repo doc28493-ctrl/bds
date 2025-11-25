@@ -87,13 +87,13 @@ const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
                 <a href="#" className="hover:text-brand-gold">Điều khoản sử dụng</a>
             </div>
             
-            {/* Admin Lock Button */}
+            {/* Admin Lock Button - Enhanced Accessibility */}
             <button 
                 onClick={onOpenAdmin}
-                className="absolute bottom-0 right-0 p-2 opacity-20 hover:opacity-100 text-brand-gold transition-opacity cursor-pointer"
+                className="absolute bottom-4 right-0 md:bottom-0 p-4 opacity-50 hover:opacity-100 text-brand-gold transition-opacity cursor-pointer z-50 hover:bg-white/5 rounded-full"
                 title="Admin Access"
             >
-                <Lock size={12} />
+                <Lock size={14} />
             </button>
         </div>
       </div>

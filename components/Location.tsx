@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigation, MapPin, Compass, Mountain, Anchor, TrainFront, Milestone } from 'lucide-react';
+import { Navigation, MapPin, Compass, Mountain, Anchor, TrainFront, Milestone, ArrowRight } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 
 const Location: React.FC = () => {
@@ -8,87 +8,131 @@ const Location: React.FC = () => {
 
   return (
     <section id="location" className="bg-brand-sand relative overflow-hidden scroll-mt-28">
-      {/* SECTION 1: MAP & BOUNDARIES */}
-      <div className="py-24 container mx-auto px-6">
-        <div className="text-center mb-16">
+      
+      {/* Decorative Background Element */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[10%] right-[-10%] w-[600px] h-[600px] bg-brand-gold/5 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-brand-primary/5 rounded-full blur-[80px]"></div>
+      </div>
+
+      {/* SECTION 1: MAP & BOUNDARIES - REDESIGNED */}
+      <div className="py-24 container mx-auto px-6 relative z-10">
+        <div className="text-center mb-20">
             <span className="text-brand-gold font-bold tracking-[0.3em] uppercase text-xs mb-4 block animate-fade-up">
                 Strategic Location
             </span>
-            <h2 className="text-4xl md:text-5xl font-serif text-brand-dark mb-4 uppercase animate-fade-up">
+            <h2 className="text-4xl md:text-6xl font-serif text-brand-dark mb-4 uppercase animate-fade-up">
                 {location.heading}
             </h2>
-            <p className="text-brand-primary italic text-xl font-serif mb-8 animate-fade-up">
+            <p className="text-brand-primary italic text-xl md:text-2xl font-serif mb-8 animate-fade-up relative inline-block">
                 "{location.subheading}"
+                <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-[1px] bg-brand-gold"></span>
             </p>
-            <div className="w-24 h-[1px] bg-brand-gold mx-auto"></div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-12 items-start">
-            {/* Left: Map Image - ADAPTIVE HEIGHT LAYOUT */}
-            <div className="lg:w-7/12 w-full">
-                <div className="relative rounded-lg overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-brand-gold/20 bg-white group p-2">
-                    {/* Inner Frame */}
-                    <div className="relative border border-brand-dark/5 rounded overflow-hidden">
-                         {/* Natural Aspect Ratio Image - w-full h-auto ensures no crop */}
+        <div className="flex flex-col lg:flex-row gap-16 items-center">
+            {/* Left: Premium Map Frame */}
+            <div className="lg:w-7/12 w-full perspective-1000 group">
+                <div className="relative rounded-2xl overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] border-[8px] border-white bg-white transition-transform duration-700 ease-out hover:rotate-x-2 hover:scale-[1.02]">
+                    
+                    {/* Map Image */}
+                    <div className="relative overflow-hidden bg-[#E5E5E5]">
                          <img 
                             src={location.image_map} 
                             alt="Bản đồ vị trí" 
-                            className="w-full h-auto block transform transition-transform duration-[2s] group-hover:scale-105"
+                            className="w-full h-auto object-cover transform transition-transform duration-[3s] group-hover:scale-110"
                         />
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/40 to-transparent opacity-60"></div>
                     </div>
                     
-                    <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur px-5 py-3 rounded shadow-lg z-10 border border-brand-gold/20 flex items-center gap-2">
+                    {/* Radar Pulse Effect at Center (Approximate Location) */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                         <div className="relative">
-                            <span className="absolute w-3 h-3 bg-red-500 rounded-full animate-ping opacity-75"></span>
-                            <MapPin size={16} className="relative text-red-600" fill="currentColor" />
+                            <span className="absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75 animate-ping"></span>
+                            <div className="relative inline-flex rounded-full h-6 w-6 bg-brand-gold border-2 border-white shadow-lg items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
                         </div>
-                        <span className="text-xs font-bold text-brand-dark tracking-wide uppercase">Vị trí thực tế</span>
+                    </div>
+
+                    {/* Floating Label - RESPONSIVE SIZE ADJUSTMENT */}
+                    <div className="absolute bottom-3 left-3 md:bottom-8 md:left-8 bg-white/95 backdrop-blur-md px-3 py-2 md:px-6 md:py-4 rounded-lg md:rounded-xl shadow-2xl border-l-2 md:border-l-4 border-brand-gold flex items-center gap-2 md:gap-4 max-w-[180px] md:max-w-xs z-20">
+                        <div className="bg-brand-primary/10 p-1.5 md:p-2 rounded-full text-brand-primary">
+                            <MapPin className="w-4 h-4 md:w-6 md:h-6" />
+                        </div>
+                        <div>
+                            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Tọa độ vàng</span>
+                            <p className="text-brand-dark font-serif font-bold text-xs md:text-sm leading-tight">Xã Long Hòa, Cần Giờ</p>
+                        </div>
                     </div>
                 </div>
-                <p className="mt-8 text-gray-600 font-light leading-relaxed text-justify text-lg">
-                    {location.desc}
-                </p>
+                
+                <div className="mt-8 pl-4 border-l-2 border-brand-gold/30">
+                    <p className="text-gray-600 font-light leading-relaxed text-justify text-lg">
+                        {location.desc}
+                    </p>
+                </div>
             </div>
 
-            {/* Right: Boundaries Info */}
-            <div className="lg:w-5/12 w-full bg-white p-10 rounded-lg shadow-xl border-t-4 border-brand-gold relative">
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Compass size={100} className="text-brand-dark" />
+            {/* Right: 2x2 Grid Boundaries Info */}
+            <div className="lg:w-5/12 w-full relative">
+                {/* Decorative Compass Background */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none">
+                    <Compass size={400} className="text-brand-dark animate-spin-slow" />
                 </div>
                 
-                <h3 className="text-3xl font-serif text-brand-dark mb-8 flex items-center gap-3 relative z-10">
+                <h3 className="text-3xl font-serif text-brand-dark mb-10 flex items-center gap-4 relative z-10">
+                    <span className="w-12 h-[1px] bg-brand-dark/20"></span>
                     Tứ Cận Tiếp Giáp
+                    <span className="w-12 h-[1px] bg-brand-dark/20"></span>
                 </h3>
-                <ul className="space-y-8 relative z-10">
-                    <li className="flex gap-5 group">
-                        <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center text-brand-primary font-bold text-sm shrink-0 border border-brand-primary/20 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors shadow-sm">N</div>
-                        <div>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Phía Bắc</span>
-                            <p className="text-brand-dark text-base font-medium leading-relaxed">{location.boundary_north}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
+                    {/* North */}
+                    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl border border-transparent hover:border-brand-gold/30 transition-all duration-300 group cursor-default">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-full bg-[#F5F2EB] flex items-center justify-center text-brand-primary font-bold text-sm border border-brand-primary/10 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors">N</div>
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest group-hover:text-brand-gold transition-colors">Phía Bắc</span>
                         </div>
-                    </li>
-                    <li className="flex gap-5 group">
-                        <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center text-brand-primary font-bold text-sm shrink-0 border border-brand-primary/20 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors shadow-sm">S</div>
-                        <div>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Phía Nam</span>
-                            <p className="text-brand-dark text-base font-medium leading-relaxed">{location.boundary_south}</p>
+                        <p className="text-brand-dark text-sm font-medium leading-relaxed group-hover:text-brand-primary transition-colors">
+                            {location.boundary_north}
+                        </p>
+                    </div>
+
+                    {/* South */}
+                    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl border border-transparent hover:border-brand-gold/30 transition-all duration-300 group cursor-default">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-full bg-[#F5F2EB] flex items-center justify-center text-brand-primary font-bold text-sm border border-brand-primary/10 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors">S</div>
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest group-hover:text-brand-gold transition-colors">Phía Nam</span>
                         </div>
-                    </li>
-                    <li className="flex gap-5 group">
-                        <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center text-brand-primary font-bold text-sm shrink-0 border border-brand-primary/20 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors shadow-sm">E</div>
-                        <div>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Phía Đông</span>
-                            <p className="text-brand-dark text-base font-medium leading-relaxed">{location.boundary_east}</p>
+                        <p className="text-brand-dark text-sm font-medium leading-relaxed group-hover:text-brand-primary transition-colors">
+                            {location.boundary_south}
+                        </p>
+                    </div>
+
+                    {/* East */}
+                    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl border border-transparent hover:border-brand-gold/30 transition-all duration-300 group cursor-default">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-full bg-[#F5F2EB] flex items-center justify-center text-brand-primary font-bold text-sm border border-brand-primary/10 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors">E</div>
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest group-hover:text-brand-gold transition-colors">Phía Đông</span>
                         </div>
-                    </li>
-                    <li className="flex gap-5 group">
-                        <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center text-brand-primary font-bold text-sm shrink-0 border border-brand-primary/20 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors shadow-sm">W</div>
-                        <div>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Phía Tây</span>
-                            <p className="text-brand-dark text-base font-medium leading-relaxed">{location.boundary_west}</p>
+                        <p className="text-brand-dark text-sm font-medium leading-relaxed group-hover:text-brand-primary transition-colors">
+                            {location.boundary_east}
+                        </p>
+                    </div>
+
+                    {/* West */}
+                    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl border border-transparent hover:border-brand-gold/30 transition-all duration-300 group cursor-default">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-full bg-[#F5F2EB] flex items-center justify-center text-brand-primary font-bold text-sm border border-brand-primary/10 group-hover:bg-brand-primary group-hover:text-brand-gold transition-colors">W</div>
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest group-hover:text-brand-gold transition-colors">Phía Tây</span>
                         </div>
-                    </li>
-                </ul>
+                        <p className="text-brand-dark text-sm font-medium leading-relaxed group-hover:text-brand-primary transition-colors">
+                            {location.boundary_west}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
       </div>

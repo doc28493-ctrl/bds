@@ -228,6 +228,7 @@ const MainApp: React.FC = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [showBrochureModal, setShowBrochureModal] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [logoClicks, setLogoClicks] = useState(0);
 
   // Refs for scroll spy
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
@@ -282,11 +283,36 @@ const MainApp: React.FC = () => {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMobileMenuOpen(false);
+    setIsMobileMenuOpen(false); // Close menu immediately
+
+    // Wait for state update/animation to finish removing overflow:hidden from body
+    // Using setTimeout + scrollIntoView is more reliable on mobile than manual calculation
+    // when dealing with scroll locks and dynamic viewports
+    setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+            // Scroll-margin-top classes in HTML handle the offset
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }, 300); // Delay ensures layout is stable after menu closes
+  };
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      setLogoClicks(prev => prev + 1);
+      
+      // Secret Admin Trigger: Click Logo 5 times
+      if (logoClicks + 1 >= 5) {
+          setIsAdminOpen(true);
+          setLogoClicks(0);
+      } else {
+        // Normal behavior: Scroll to top and close menu
+        if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+        if (window.scrollY > 0) scrollToTop();
+      }
   };
 
   const navLinks = [
@@ -340,8 +366,8 @@ const MainApp: React.FC = () => {
       >
         <div className="container mx-auto px-4 lg:px-6 flex justify-between items-center">
           
-          {/* Logo */}
-          <a href="#" className="flex items-center group relative z-50 mr-4 lg:mr-8" onClick={scrollToTop}>
+          {/* Logo with Secret Admin Trigger */}
+          <a href="#" className="flex items-center group relative z-50 mr-4 lg:mr-8 cursor-pointer" onClick={handleLogoClick}>
              <img 
                  src="https://tse3.mm.bing.net/th/id/OIP.eNRF8yQp_Egg-2SdzLKtewHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" 
                  alt="Vinhomes Green Paradise" 

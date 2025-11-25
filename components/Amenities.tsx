@@ -20,8 +20,8 @@ const Amenities: React.FC = () => {
       switch(activeTab) {
           case 'iconic':
               return (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
-                      <div className="group relative overflow-hidden rounded-lg shadow-2xl">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="group relative overflow-hidden rounded-lg shadow-2xl animate-fade-up" style={{ animationDelay: '0ms' }}>
                           <div className="aspect-[4/3] overflow-hidden">
                             <img src={content.amenities.landmark_tower_img} alt="Tower" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" />
                           </div>
@@ -32,7 +32,7 @@ const Amenities: React.FC = () => {
                               <p className="text-gray-300 font-light text-sm md:text-base">{content.amenities.landmark_tower_desc}</p>
                           </div>
                       </div>
-                      <div className="group relative overflow-hidden rounded-lg shadow-2xl">
+                      <div className="group relative overflow-hidden rounded-lg shadow-2xl animate-fade-up" style={{ animationDelay: '150ms' }}>
                           <div className="aspect-[4/3] overflow-hidden">
                              <img src={content.amenities.landmark_theatre_img} alt="Theatre" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" />
                           </div>
@@ -47,8 +47,8 @@ const Amenities: React.FC = () => {
               );
           case 'entertainment':
               return (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
-                      <div className="group relative overflow-hidden rounded-lg shadow-xl">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="group relative overflow-hidden rounded-lg shadow-xl animate-fade-up" style={{ animationDelay: '0ms' }}>
                           <div className="aspect-video overflow-hidden">
                              <img src={content.amenities.ent_lagoon_img} alt="Lagoon" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" />
                           </div>
@@ -59,7 +59,7 @@ const Amenities: React.FC = () => {
                           </div>
                           <div className="absolute top-4 right-4 bg-brand-primary text-white text-xs font-bold px-3 py-1 rounded-full">{content.amenities.ent_lagoon_sub}</div>
                       </div>
-                      <div className="group relative overflow-hidden rounded-lg shadow-xl">
+                      <div className="group relative overflow-hidden rounded-lg shadow-xl animate-fade-up" style={{ animationDelay: '150ms' }}>
                           <div className="aspect-video overflow-hidden">
                               <img src={content.amenities.ent_park_img} alt="Park" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" />
                           </div>
@@ -74,13 +74,17 @@ const Amenities: React.FC = () => {
               );
           case 'elite':
               return (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {[
                         { img: content.amenities.elite_golf_img, sub: content.amenities.elite_golf_sub, title: content.amenities.elite_golf_title, desc: content.amenities.elite_golf_desc },
                         { img: content.amenities.elite_marina_img, sub: content.amenities.elite_marina_sub, title: content.amenities.elite_marina_title, desc: content.amenities.elite_marina_desc },
                         { img: content.amenities.elite_hospital_img, sub: content.amenities.elite_hospital_sub, title: content.amenities.elite_hospital_title, desc: content.amenities.elite_hospital_desc }
                       ].map((item, i) => (
-                          <div key={i} className="bg-brand-dark border border-white/10 p-6 rounded-lg hover:border-brand-gold transition-colors group flex flex-col h-full">
+                          <div 
+                            key={i} 
+                            className="bg-brand-dark border border-white/10 p-6 rounded-lg hover:border-brand-gold transition-colors group flex flex-col h-full animate-fade-up"
+                            style={{ animationDelay: `${i * 100}ms` }}
+                          >
                               <div className="aspect-[4/3] overflow-hidden rounded mb-4 w-full">
                                   <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                               </div>
@@ -93,9 +97,13 @@ const Amenities: React.FC = () => {
               );
           case 'masterplan':
               return (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {[content.amenities.map_1, content.amenities.map_2, content.amenities.map_3, content.amenities.map_4].map((mapSrc, i) => (
-                          <div key={i} className="rounded-lg overflow-hidden shadow-lg border border-white/10 bg-white/5">
+                          <div 
+                            key={i} 
+                            className="rounded-lg overflow-hidden shadow-lg border border-white/10 bg-white/5 animate-fade-up"
+                            style={{ animationDelay: `${i * 100}ms` }}
+                          >
                                <img src={mapSrc} alt={`Map ${i+1}`} className="w-full h-auto object-contain" />
                           </div>
                       ))}
@@ -139,8 +147,8 @@ const Amenities: React.FC = () => {
             ))}
         </div>
 
-        {/* CONTENT AREA */}
-        <div className="min-h-[500px]">
+        {/* CONTENT AREA - With Key for Animation Reset */}
+        <div className="min-h-[500px]" key={activeTab}>
             {renderContent()}
         </div>
 
