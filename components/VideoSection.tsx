@@ -4,6 +4,7 @@ import { Play } from 'lucide-react';
 
 const VideoPlayer: React.FC<{ url: string }> = ({ url }) => {
     const [isPlaying, setIsPlaying] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
     // Helper to extract Video ID and SI parameter
     const parseYoutubeUrl = (url: string) => {
@@ -60,9 +61,10 @@ const VideoPlayer: React.FC<{ url: string }> = ({ url }) => {
                 // Custom Facade (Thumbnail + Play Button)
                 <div onClick={() => setIsPlaying(true)} className="relative w-full h-full">
                     <img 
-                        src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} 
+                        src={!imgError ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} 
                         alt="Video Thumbnail" 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+                        onError={() => setImgError(true)}
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
                     

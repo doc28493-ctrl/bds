@@ -5,6 +5,7 @@ import { Rotate3D, ArrowDown } from 'lucide-react';
 const Hero: React.FC = () => {
   const { content } = useContent();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     // Trigger animations after mount
@@ -21,23 +22,26 @@ const Hero: React.FC = () => {
              transform: isLoaded ? 'scale(1)' : 'scale(1.15)' 
            }}
       >
-          {content.hero.videoUrl ? (
+          {/* 1. Static Background Image (Always rendered as placeholder/fallback) */}
+          <div 
+             className="absolute inset-0 bg-cover bg-center animate-scale-slow" 
+             style={{ backgroundImage: `url('${content.hero.bgImage}')` }}
+          ></div>
+
+          {/* 2. Video Layer (Fades in when ready) */}
+          {content.hero.videoUrl && (
              <video 
                 src={content.hero.videoUrl} 
                 autoPlay 
                 muted 
                 loop 
                 playsInline 
-                className="w-full h-full object-cover transition-opacity duration-1000"
+                onLoadedData={() => setVideoReady(true)}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
              />
-          ) : (
-             <div 
-                className="absolute inset-0 bg-cover bg-center animate-scale-slow" 
-                style={{ backgroundImage: `url('${content.hero.bgImage}')` }}
-             ></div>
           )}
 
-          {/* Layer 1: Cinematic Grading Overlay */}
+          {/* Layer 3: Cinematic Grading Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#012822]/40 via-transparent to-[#012822]/90 mix-blend-multiply"></div>
           <div className="absolute inset-0 bg-black/20"></div>
       </div>
